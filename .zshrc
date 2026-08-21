@@ -44,7 +44,7 @@ alias ll='ls -lah'
 alias la='ls -lA'
 alias l='ls -lh'
 alias cd..='cd ..'
-alias ...='cd ../..''
+alias ...='cd ../..'
 
 # Git aliases
 alias g='git'
@@ -146,8 +146,42 @@ kgetlogs() {
 }
 
 # ============================================================================
-# Simple Prompt (no special chars)
+# Git Branch Display
 # ============================================================================
 
-# Use simple prompt without special characters or emojis
-PS1='%n@%m:%~ $ '
+# Function to get current git branch
+git_branch() {
+  if command -v git &> /dev/null; then
+    local branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+    if [ -n "$branch" ] && [ "$branch" != "HEAD" ]; then
+      echo " [$branch]"
+    fi
+  fi
+}
+
+# ============================================================================
+# Custom Prompt with Colors & Git Branch
+# ============================================================================
+
+# Color definitions
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+# Custom prompt: user@host:path [git-branch] $
+# Uses colors and git branch for better development experience
+setopt PROMPT_SUBST
+PS1="%F{cyan}%n%f@%F{green}%m%f:%F{blue}%~%f\$(git_branch)%F{yellow}%f "
+
+# ============================================================================
+# Welcome & Motivation Message
+# ============================================================================
+
+# Show a quick status and motivational message
+echo "---"
+echo "Welcome to your development shell!"
+echo "Loaded tools: git, docker, kubectl, node, python"
+echo "---"
