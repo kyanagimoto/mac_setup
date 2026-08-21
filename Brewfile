@@ -1,6 +1,3 @@
-tap "homebrew/core"
-tap "homebrew/cask"
-
 # Homebrew formulae
 brew "git"
 brew "node"
@@ -10,9 +7,14 @@ brew "python"
 brew "htop"
 brew "tmux"
 
+# Container/Kubernetes
+brew "colima"
+brew "kubectl"
+
 # GUI apps (casks)
 cask "iterm2"
 cask "visual-studio-code"
+cask "docker"
 
 # mac App Store apps (optional) - requires 'mas' and App Store login
 # Example: mas "Xcode" => mas "497799835"
