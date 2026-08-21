@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "=== mac_setup: Homebrew + Brewfile installer ==="
+echo "=== mac_setup: Homebrew + Brewfile + Colima + zsh installer ==="
 
 # Install Homebrew if missing
 if ! command -v brew >/dev/null 2>&1; then
@@ -40,16 +40,178 @@ fi
 echo "Running brew cleanup..."
 brew cleanup || true
 
+# ============================================================================
+# Setup Colima configuration and auto-start
+# ============================================================================
+
+echo ""
+echo "=== Setting up Colima ==="
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+COLIMA_CONFIG="${HOME}/.colima/default.yaml"
+COLIMA_CONFIG_SOURCE="${SCRIPT_DIR}/colima.yaml"
+
+# Create ~/.colima directory if it doesn't exist
+mkdir -p "${HOME}/.colima"
+
+# Copy colima config if present in the repo
+if [[ -f "${COLIMA_CONFIG_SOURCE}" ]]; then
+  echo "Copying colima configuration to ${COLIMA_CONFIG}..."
+  cp "${COLIMA_CONFIG_SOURCE}" "${COLIMA_CONFIG}"
+else
+  echo "Warning: colima.yaml not found in repo root. Using default colima configuration."
+fi
+
+# Setup LaunchAgent for auto-start on macOS boot
+LAUNCH_AGENTS_DIR="${HOME}/Library/LaunchAgents"
+mkdir -p "${LAUNCH_AGENTS_DIR}"
+
+PLIST_FILE="${LAUNCH_AGENTS_DIR}/com.mac-setup.colima.plist"
+
+cat > "${PLIST_FILE}" << 'PLIST'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.mac-setup.colima</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>sh</string>
+        <string>-c</string>
+        <string>sleep 10 &amp;&amp; /opt/homebrew/bin/colima start --profile default || /usr/local/bin/colima start --profile default</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>StartInterval</key>
+    <integer>60</integer>
+    <key>StandardErrorPath</key>
+    <string>/var/log/colima.log</string>
+    <key>StandardOutPath</key>
+    <string>/var/log/colima.log</string>
+</dict>
+</plist>
+PLIST
+
+echo "Created LaunchAgent at ${PLIST_FILE}"
+echo "Colima will auto-start on next macOS boot"
+
+# Load the LaunchAgent immediately
+launchctl load "${PLIST_FILE}" 2>/dev/null || {
+  echo "Note: LaunchAgent will be loaded on next system restart"
+}
+
+# ============================================================================
+# Setup zsh configuration
+# ============================================================================
+
+echo ""
+echo "=== Setting up zsh configuration ==="
+
+ZSHRC_FILE="${HOME}/.zshrc"
+ZSHRC_SOURCE="${SCRIPT_DIR}/.zshrc"
+
+# Backup existing .zshrc if it exists
+if [[ -f "${ZSHRC_FILE}" ]]; then
+  BACKUP_FILE="${ZSHRC_FILE}.backup.$(date +%Y%m%d_%H%M%S)"
+  echo "Backing up existing .zshrc to ${BACKUP_FILE}..."
+  cp "${ZSHRC_FILE}" "${BACKUP_FILE}"
+fi
+
+# Copy new .zshrc from repo
+if [[ -f "${ZSHRC_SOURCE}" ]]; then
+  echo "Copying zsh configuration to ${ZSHRC_FILE}..."
+  cp "${ZSHRC_SOURCE}" "${ZSHRC_FILE}"
+  chmod 644 "${ZSHRC_FILE}"
+  echo "✓ zsh configuration installed"
+else
+  echo "Warning: .zshrc not found in repo root. Skipping zsh configuration."
+fi
+
+# ============================================================================
+# Install optional tools
+# ============================================================================
+
+echo ""
+echo "=== Installing optional tools ==="
+
+# Install starship (modern shell prompt)
+if ! command -v starship &> /dev/null; then
+  echo "Installing starship..."
+  brew install starship
+  echo "✓ starship installed"
+else
+  echo "✓ starship already installed"
+fi
+
+# Install nvm (Node Version Manager) if not present
+if [[ ! -d "${HOME}/.nvm" ]]; then
+  echo "Installing nvm..."
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+  export NVM_DIR="${HOME}/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  echo "✓ nvm installed"
+else
+  echo "✓ nvm already installed"
+fi
+
+# ============================================================================
+# Final Summary
+# ============================================================================
+
 cat <<'NOTE'
 
-Done.
+✅ Installation complete!
 
-Notes:
-- For mac App Store apps via 'mas' you must login to the App Store and include mas entries (app IDs) in the Brewfile.
-- This script attempts to make Homebrew available in the current shell, but you may need to add the 'brew shellenv' line to your shell profile (e.g. ~/.zprofile or ~/.bash_profile) for future shells.
+=== What was installed ===
+- Homebrew packages (from Brewfile)
+- Colima with k3s (auto-starts on boot)
+- Comprehensive zsh configuration with:
+  • Homebrew environment setup
+  • kubectl completion & Kubernetes aliases
+  • Docker & Colima aliases
+  • Git aliases & shortcuts
+  • Starship prompt integration
+  • NVM (Node Version Manager)
+  • Useful functions (dockerclean, kctx, kgetlogs, etc.)
 
-Example usage:
-  chmod +x install.sh
-  ./install.sh
+=== Next Steps ===
+1. Reload your shell:
+   source ~/.zshrc
+
+2. (Optional) Install Starship config:
+   mkdir -p ~/.config/starship
+   touch ~/.config/starship.toml
+
+3. Check installed tools:
+   brew list
+   kubectl version --client
+   colima status
+
+=== Useful Commands ===
+Colima:
+  colima start        # Start Colima
+  colima stop         # Stop Colima
+  colima status       # Check status
+  colima-start        # Alias for colima start
+
+Kubernetes:
+  k get pods          # List pods
+  k get svc           # List services
+  kctx                # Show current context
+  kctx <name>         # Switch context
+
+Docker:
+  d ps                # List containers
+  d images            # List images
+  dockerclean         # Clean up Docker
+
+=== Notes ===
+- Your old .zshrc was backed up (if it existed)
+- Colima will auto-start on macOS boot
+- Colima logs: tail -f /var/log/colima.log
+- LaunchAgent status: launchctl list | grep colima
+
+Enjoy your development setup! 🚀
 
 NOTE
