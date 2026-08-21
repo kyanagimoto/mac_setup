@@ -157,13 +157,13 @@ kgetlogs() {
 # Welcome Message
 # ============================================================================
 
-echo "🎉 Welcome to macOS development environment!"
+echo "[mac_setup] Welcome to macOS development environment!"
 echo "Installed tools:"
-echo "  ✓ Homebrew: $(brew --version | head -n1)"
-echo "  ✓ Node.js: $(node --version 2>/dev/null || echo 'not installed')"
-echo "  ✓ Python: $(python3 --version 2>/dev/null || echo 'not installed')"
-echo "  ✓ Git: $(git --version)"
-echo "  ✓ kubectl: $(kubectl version --client --short 2>/dev/null || echo 'not installed')"
-echo "  ✓ Docker: $(docker --version 2>/dev/null || echo 'not installed')"
-echo "  ✓ Colima: $(colima --version 2>/dev/null || echo 'not installed')"
+echo "  [OK] Homebrew: $(brew --version | head -n1)"
+echo "  [OK] Node.js: $(node --version 2>/dev/null || echo 'not installed')"
+echo "  [OK] Python: $(python3 --version 2>/dev/null || echo 'not installed')"
+echo "  [OK] Git: $(git --version)"
+echo "  [OK] kubectl: $(kubectl version --client --short 2>/dev/null || echo 'not installed')"
+echo "  [OK] Docker: $(docker --version 2>/dev/null || echo 'not installed')"
+echo "  [OK] Colima: $(colima --version 2>/dev/null || echo 'not installed')"
 echo ""
