@@ -123,7 +123,7 @@ if [[ -f "${ZSHRC_SOURCE}" ]]; then
   echo "Copying zsh configuration to ${ZSHRC_FILE}..."
   cp "${ZSHRC_SOURCE}" "${ZSHRC_FILE}"
   chmod 644 "${ZSHRC_FILE}"
-  echo "✓ zsh configuration installed"
+  echo "[OK] zsh configuration installed"
 else
   echo "Warning: .zshrc not found in repo root. Skipping zsh configuration."
 fi
@@ -139,9 +139,9 @@ echo "=== Installing optional tools ==="
 if ! command -v starship &> /dev/null; then
   echo "Installing starship..."
   brew install starship
-  echo "✓ starship installed"
+  echo "[OK] starship installed"
 else
-  echo "✓ starship already installed"
+  echo "[OK] starship already installed"
 fi
 
 # Install nvm (Node Version Manager) if not present
@@ -150,9 +150,9 @@ if [[ ! -d "${HOME}/.nvm" ]]; then
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
   export NVM_DIR="${HOME}/.nvm"
   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-  echo "✓ nvm installed"
+  echo "[OK] nvm installed"
 else
-  echo "✓ nvm already installed"
+  echo "[OK] nvm already installed"
 fi
 
 # ============================================================================
@@ -161,19 +161,19 @@ fi
 
 cat <<'NOTE'
 
-✅ Installation complete!
+[COMPLETE] Installation complete!
 
 === What was installed ===
 - Homebrew packages (from Brewfile)
 - Colima with k3s (auto-starts on boot)
 - Comprehensive zsh configuration with:
-  • Homebrew environment setup
-  • kubectl completion & Kubernetes aliases
-  • Docker & Colima aliases
-  • Git aliases & shortcuts
-  • Starship prompt integration
-  • NVM (Node Version Manager)
-  • Useful functions (dockerclean, kctx, kgetlogs, etc.)
+  * Homebrew environment setup
+  * kubectl completion & Kubernetes aliases
+  * Docker & Colima aliases
+  * Git aliases & shortcuts
+  * Starship prompt integration
+  * NVM (Node Version Manager)
+  * Useful functions (dockerclean, kctx, kgetlogs, etc.)
 
 === Next Steps ===
 1. Reload your shell:
@@ -212,6 +212,6 @@ Docker:
 - Colima logs: tail -f /var/log/colima.log
 - LaunchAgent status: launchctl list | grep colima
 
-Enjoy your development setup! 🚀
+Enjoy your development setup!
 
 NOTE
