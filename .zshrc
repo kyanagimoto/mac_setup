@@ -174,7 +174,7 @@ NC='\033[0m'
 # Custom prompt: user@host:path [git-branch] $
 # Uses colors and git branch for better development experience
 setopt PROMPT_SUBST
-PS1="%F{cyan}%n%f@%F{green}%m%f:%F{blue}%~%f\$(git_branch)%F{yellow}%f "
+PS1="%F{cyan}%n%f:%F{blue}%~%f\$(git_branch)%F{yellow}%f "
 
 # ============================================================================
 # Welcome & Motivation Message
