@@ -8,6 +8,7 @@ Homebrew、Colima + k3s、zsh の統合設定で、開発環境を一気にセ�
 
 - **Homebrew**: パッケージマネージャー（Git、Node.js、Python など）
 - **Colima + k3s**: Docker & Kubernetes（macOS起動時に自動起動）
+- **GitHub Copilot CLI**: ターミナルから使えるAIコーディングエージェント
 - **zsh**: 開発者向けシェル設定
   - kubectl / Docker / Git のエイリアス
   - Starship プロンプト統合
@@ -58,6 +59,9 @@ source ~/.zshrc
 5. **オプショナルツールのインストール**
    - Starship（モダンシェルプロンプト）
    - NVM（Node Version Manager）
+
+6. **GitHub Copilot CLI のインストール**
+   - Homebrew cask の `copilot-cli` をインストール
 
 ## 📁 ファイル説明
 
@@ -125,6 +129,20 @@ gl                    # git log --oneline
 gb                    # git branch
 gco                   # git checkout
 ```
+
+### GitHub Copilot CLI
+
+初回セットアップ後、プロジェクトのディレクトリで `copilot` を実行します。
+未ログインの場合は、Copilot CLI の画面内で `/login` を実行して GitHub アカウントを認証してください。
+
+```bash
+copilot               # 対話型CLIを起動
+copilot --continue     # 直前のセッションを再開
+copilot --version      # バージョン確認
+```
+
+Copilot CLI は現在のディレクトリ以下のファイルを読み取り、変更、コマンド実行する場合があります。
+信頼できるプロジェクトディレクトリで起動し、表示される権限確認を内容ごとに承認してください。
 
 ### macOS
 

@@ -173,6 +173,7 @@ cat <<'NOTE'
   * Git aliases & shortcuts
   * Starship prompt integration
   * NVM (Node Version Manager)
+  * GitHub Copilot CLI
   * Useful functions (dockerclean, kctx, kgetlogs, etc.)
 
 === Next Steps ===
@@ -187,6 +188,7 @@ cat <<'NOTE'
    brew list
    kubectl version --client
    colima status
+  copilot --version
 
 === Useful Commands ===
 Colima:
@@ -205,6 +207,10 @@ Docker:
   d ps                # List containers
   d images            # List images
   dockerclean         # Clean up Docker
+
+GitHub Copilot CLI:
+  copilot             # Start Copilot in the current directory
+  /login              # Authenticate on first launch (run inside Copilot)
 
 === Notes ===
 - Your old .zshrc was backed up (if it existed)
