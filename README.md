@@ -2,50 +2,240 @@
 
 このリポジトリは、macOS 開発環境の素早いセットアップを補助するものです。
 
-ルートに Brewfile があり、Homebrew（未導入であれば自動でインストール）を使って一括でパッケージを導入できます。
+Homebrew、Colima + k3s、zsh の統合設定で、開発環境を一気にセットアップできます。
 
-また、Colima + k3s の自動起動設定も含まれており、macOS起動時に自動的に Colima k3s が起動するようにセットアップできます。
+## 📦 セットアップ内容
 
-## 使い方
+- **Homebrew**: パッケージマネージャー（Git、Node.js、Python など）
+- **Colima + k3s**: Docker & Kubernetes（macOS起動時に自動起動）
+- **zsh**: 開発者向けシェル設定
+  - kubectl / Docker / Git のエイリアス
+  - Starship プロンプト統合
+  - NVM (Node Version Manager)
+  - 便利なコマンド補完・関数
 
-1. リポジトリをクローンします
+## 🚀 クイックスタート
 
-   ```bash
-   git clone https://github.com/kyanagimoto/mac_setup.git
-   cd mac_setup
-   ```
+### 1. リポジトリをクローン
 
-2. スクリプトに実行権限を付与して実行します
+```bash
+git clone https://github.com/kyanagimoto/mac_setup.git
+cd mac_setup
+```
 
-   ```bash
-   chmod +x install.sh
-   ./install.sh
-   ```
+### 2. インストールスクリプトを実行
 
-## スクリプトの説明
+```bash
+chmod +x install.sh
+./install.sh
+```
 
-### install.sh
-  - Homebrew がインストールされていない場合は公式インストーラーを実行します。
-  - brew bundle を使ってルートの Brewfile から formula/cask/mas を一括インストールします（Brewfile が存在する場合）。
-  - brew cleanup を実行します。
-  - **Colima の設定と自動起動**: `colima.yaml` をコピーし、macOS LaunchAgent を設定して、起動時に自動的に Colima が起動するようにします。
+### 3. シェルをリロード
+
+```bash
+source ~/.zshrc
+```
+
+## 📋 スクリプトの詳細説明
+
+### install.sh の処理フロー
+
+1. **Homebrew インストール**
+   - 未導入の場合は公式インストーラーを実行
+
+2. **Brewfile からパッケージをインストール**
+   - Git、Node.js、Python、kubectl、Docker、Colima など
+
+3. **Colima セットアップ**
+   - `colima.yaml` を `~/.colima/default.yaml` にコピー
+   - LaunchAgent を設定して、macOS起動時に自動起動するように構成
+   - ログ: `/var/log/colima.log`
+
+4. **zsh 設定のセットアップ**
+   - 既存の `.zshrc` をバックアップ
+   - リポジトリの `.zshrc` を `~/.zshrc` にコピー
+
+5. **オプショナルツールのインストール**
+   - Starship（モダンシェルプロンプト）
+   - NVM（Node Version Manager）
+
+## 📁 ファイル説明
+
+### Brewfile
+開発に必要なパッケージを定義。Homebrew + Cask で一括インストール。
 
 ### colima.yaml
-  - Colima と k3s の設定ファイルです。CPU、メモリ、ディスク容量などをカスタマイズできます。
-  - デフォルトで k3s が有効になっており、kubectl でアクセス可能です。
+Colima と k3s の設定ファイル。以下をカスタマイズ可能：
+- CPU コア数（デフォルト: 4）
+- メモリ（デフォルト: 8GB）
+- ディスク容量（デフォルト: 100GB）
+- Kubernetes バージョン
 
-## 注意点
+### .zshrc
+包括的なシェル設定ファイル。以下が含まれます：
+- Homebrew 環境設定
+- kubectl 補完 & エイリアス
+- Docker & Colima のエイリアス
+- Git のエイリアス
+- Starship プロンプト統合
+- NVM 統合
+- 便利なシェル関数
 
-- mac App Store のアプリを自動でインストールするには 'mas' を Brewfile に追加し、App Store へサインインしておく必要があります（例: mas "497799835" など）。
-- Apple Silicon と Intel の両アーキテクチャに対応するため、brew のパス設定をスクリプト内で試みますが、シェルの初期化ファイル（~/.zprofile や ~/.bash_profile など）に `eval "$(brew shellenv)"` を追加することをお勧めします。
-- スクリプトは重要な操作を行います。実行前に Brewfile の内容を確認し、必要に応じてパッケージを編集してください。
-- Colima の自動起動は LaunchAgent で管理されます。ログは `/var/log/colima.log` で確認できます。
+## 🛠️ 便利なコマンド
 
-## Colima コマンド
+### Colima
 
-- 手動で起動: `colima start`
-- 停止: `colima stop`
-- ステータス確認: `colima status`
-- LaunchAgent の状態確認: `launchctl list | grep colima`
+```bash
+colima start          # 開始
+colima stop           # 停止
+colima status         # 状態確認
+colima-start          # エイリアス: colima start
+colima-stop           # エイリアス: colima stop
+colima-status         # エイリアス: colima status
+```
 
-Brewfile の内容例はリポジトリルートの Brewfile を参照してください。
+### Kubernetes
+
+```bash
+k get pods            # ポッド一覧（kubectl get pods の短縮）
+k get svc             # サービス一覧
+k get nodes           # ノード一覧
+kctx                  # 現在のコンテキスト表示
+kctx <name>           # コンテキスト切り替え
+kgetlogs <deployment> # デプロイメントのログを全ポッドから取得
+```
+
+### Docker
+
+```bash
+d ps                  # コンテナ一覧
+d images              # イメージ一覧
+dc up                 # Docker Compose 実行
+dockerclean           # コンテナ・イメージ・ボリュームをクリーンアップ
+```
+
+### Git
+
+```bash
+gs                    # git status
+ga                    # git add
+gc                    # git commit
+gp                    # git push
+gl                    # git log --oneline
+gb                    # git branch
+gco                   # git checkout
+```
+
+### macOS
+
+```bash
+ll                    # ls -lah（詳細表示）
+la                    # ls -lA
+showfiles             # 隠しファイルを表示
+hidefiles             # 隠しファイルを非表示
+```
+
+## ⚙️ カスタマイズ
+
+### Colima の設定を変更
+
+`colima.yaml` を編集してから `install.sh` を実行：
+
+```yaml
+cpu: 8          # コア数を増やす
+memory: 16      # メモリを増やす
+disk: 200       # ディスク容量を増やす
+```
+
+### zsh プロンプトのカスタマイズ
+
+Starship を使用している場合、以下で設定：
+
+```bash
+mkdir -p ~/.config/starship
+cat > ~/.config/starship.toml << 'EOF'
+# Starship 設定
+add_newline = true
+EOF
+```
+
+### 新しいエイリアスを追加
+
+`~/.zshrc` を編集して、以下を追加：
+
+```bash
+alias mycommand='your-command'
+```
+
+その後、`source ~/.zshrc` でリロード。
+
+## ⚠️ 注意点
+
+- **バックアップ**: 既存の `.zshrc` は自動的に `.zshrc.backup.YYYYMMDD_HHMMSS` としてバックアップされます
+- **Colima 自動起動**: LaunchAgent で管理されます。手動でアンロードする場合：
+  ```bash
+  launchctl unload ~/Library/LaunchAgents/com.mac-setup.colima.plist
+  ```
+- **App Store アプリ**: `mas` を使用する場合は Brewfile に追加し、App Store にサインイン
+- **Apple Silicon & Intel**: 自動検出・対応しています
+
+## 📖 トラブルシューティング
+
+### Colima が起動しない
+
+```bash
+# ログを確認
+tail -f /var/log/colima.log
+
+# 手動で起動してエラーを確認
+colima start
+```
+
+### kubectl が見つからない
+
+```bash
+# 再度インストール
+brew install kubectl
+
+# PATH の確認
+which kubectl
+```
+
+### zsh の設定が反映されない
+
+```bash
+# シェルをリロード
+source ~/.zshrc
+
+# または新しいターミナルウィンドウを開く
+```
+
+### LaunchAgent のトラブル
+
+```bash
+# ステータス確認
+launchctl list | grep colima
+
+# 再度ロード
+launchctl load ~/Library/LaunchAgents/com.mac-setup.colima.plist
+
+# アンロード
+launchctl unload ~/Library/LaunchAgents/com.mac-setup.colima.plist
+```
+
+## 🔄 アップデート
+
+セットアップを再度実行する場合：
+
+```bash
+git pull origin main
+./install.sh
+```
+
+## 📝 ライセンス
+
+MIT License
+
+## 🤝 貢献
+
+改善案や問題報告は Issue/PR でお願いします。
