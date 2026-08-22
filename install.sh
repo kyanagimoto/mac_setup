@@ -137,10 +137,11 @@ echo "=== Setting up VS Code ==="
 
 if command -v code &> /dev/null; then
   code --install-extension vscodevim.vim --force
+  code --install-extension Continue.continue --force
   echo "[OK] VS Code extensions installed"
 else
   echo "Warning: VS Code CLI (code) not found. Skipping extension installation."
-  echo "Install VS Code first, then run: code --install-extension vscodevim.vim"
+  echo "Install VS Code first, then run: code --install-extension Continue.continue"
 fi
 
 # ============================================================================
@@ -201,6 +202,7 @@ cat <<'NOTE'
 
 3. Check installed tools:
    brew list
+  ollama --version
    kubectl version --client
    colima status
   copilot --version
@@ -230,6 +232,7 @@ GitHub Copilot CLI:
 
 VS Code:
   code --list-extensions  # List installed extensions
+  Continue                # Continue extension with Ollama
 
 === Notes ===
 - Your old .zshrc was backed up (if it existed)

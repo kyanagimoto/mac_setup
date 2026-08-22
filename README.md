@@ -9,6 +9,7 @@ Homebrew、Colima + k3s、zsh の統合設定で、開発環境を一気にセ�
 - **Homebrew**: パッケージマネージャー（Git、Node.js、Python など）
 - **Colima + k3s**: Docker & Kubernetes（macOS起動時に自動起動）
 - **GitHub Copilot CLI**: ターミナルから使えるAIコーディングエージェント
+- **Ollama**: ローカルでAIモデルを実行する環境（`gemma2:9b` を推奨）
 - **VS Code**: 拡張機能とエディター設定をリポジトリで管理
 - **zsh**: 開発者向けシェル設定
   - kubectl / Docker / Git のエイリアス
@@ -65,6 +66,7 @@ source ~/.zshrc
    - Homebrew cask の `copilot-cli` をインストール
 
 7. **VS Code のセットアップ**
+   - Vim 拡張機能と Continue 拡張機能をインストール
    - `.vscode/extensions.json` の推奨拡張機能をインストール
    - `.vscode/settings.json` で Vim モードを有効化
 
@@ -92,7 +94,7 @@ Colima と k3s の設定ファイル。以下をカスタマイズ可能：
 - 便利なシェル関数
 
 ### .vscode/extensions.json と .vscode/settings.json
-VS Code の拡張機能とワークスペース設定を管理します。現在は Vim 拡張機能を導入し、Vim モードを有効にしています。
+VS Code の拡張機能とワークスペース設定を管理します。Vim モードに加えて Continue を導入します。
 
 新しい環境では `./install.sh` 実行時に拡張機能がインストールされます。VS Code CLI が見つからない場合は、VS Code のコマンドパレットから `Shell Command: Install 'code' command in PATH` を実行してから、再度 `./install.sh` を実行してください。
 
@@ -154,6 +156,43 @@ copilot --version      # バージョン確認
 
 Copilot CLI は現在のディレクトリ以下のファイルを読み取り、変更、コマンド実行する場合があります。
 信頼できるプロジェクトディレクトリで起動し、表示される権限確認を内容ごとに承認してください。
+
+### Ollama
+
+Ollamaは自動インストールされません。公式サイトまたはHomebrewで導入し、セットアップ後にシェルをリロードしてモデルを取得します。
+
+```bash
+brew install ollama
+brew services start ollama
+source ~/.zshrc
+ollama pull gemma2:9b
+ollama run gemma2:9b
+```
+
+モデルの利用可能なタグは [Ollama Library](https://ollama.com/library) で確認してください。
+
+### Continue と Ollama の接続
+
+Ollama本体とContinueの接続設定は自動化せず、Continueの設定画面で入力します。
+
+設定値は次のとおりです。
+
+| 設定 | 値 |
+| --- | --- |
+| Provider | `Ollama` |
+| Base URL | `http://localhost:11434` |
+| Model ID | `gemma2:9b` |
+| Thinking / Reasoning | `Off` |
+
+Ollamaが起動している状態でContinueを開きます。利用可能なモデルは `ollama list` で確認できます。
+
+Thinking modeで処理が止まって見える場合は、設定のReasoningを無効にしてください。まず無効状態で接続を確認し、必要な場合だけ有効にします。
+
+手動で設定する場合は、VS Codeの拡張機能ビュー（`⇧⌘X`）から **Continue** を開き、設定画面で同じ3項目を入力します。Continueが表示されない場合は、次のコマンドで拡張機能をインストールしてください。
+
+```bash
+code --install-extension Continue.continue
+```
 
 ### macOS
 

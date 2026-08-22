@@ -70,6 +70,12 @@ alias dc='docker compose'
 alias di='docker images'
 alias dps='docker ps'
 
+# Ollama aliases
+alias ollama-start='brew services start ollama'
+alias ollama-stop='brew services stop ollama'
+alias ollama-status='brew services list | grep ollama'
+alias ollama-gemma='ollama run gemma2:9b'
+
 # macOS specific
 alias hidefiles='defaults write com.apple.finder AppleShowAllFiles NO; killall Finder'
 alias showfiles='defaults write com.apple.finder AppleShowAllFiles YES; killall Finder'
