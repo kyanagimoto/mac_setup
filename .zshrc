@@ -159,6 +159,15 @@ git_branch() {
   fi
 }
 
+kubernetes_context() {
+  if command -v kubectl &> /dev/null; then
+    local context=$(kubectl config current-context 2>/dev/null)
+    if [ -n "$context" ]; then
+      echo " [$context]"
+    fi
+  fi
+}
+
 # ============================================================================
 # Custom Prompt with Colors & Git Branch
 # ============================================================================
@@ -171,10 +180,10 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
-# Custom prompt: user@host:path [git-branch] $
+# Custom prompt: user@host:path [git-branch] [k8s:context] $
 # Uses colors and git branch for better development experience
 setopt PROMPT_SUBST
-PS1="%F{cyan}%n%f:%F{blue}%~%f\$(git_branch)%F{yellow}%f "
+PS1="%F{cyan}%n%f:%F{blue}%~%f\$(git_branch)\$(kubernetes_context)%F{yellow}%f "
 
 # ============================================================================
 # Welcome & Motivation Message

@@ -87,6 +87,7 @@ Colima と k3s の設定ファイル。以下をカスタマイズ可能：
 - Docker & Colima のエイリアス
 - Git のエイリアス
 - Starship プロンプト統合
+- Git ブランチと現在の Kubernetes context のプロンプト表示
 - NVM 統合
 - 便利なシェル関数
 
