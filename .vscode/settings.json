@@ -1,0 +1,5 @@
+{
+  "vim.enabled": true,
+  "vim.useCtrlKeys": true,
+  "vim.useSystemClipboard": true
+}

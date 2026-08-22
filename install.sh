@@ -129,6 +129,21 @@ else
 fi
 
 # ============================================================================
+# Setup VS Code extensions and settings
+# ============================================================================
+
+echo ""
+echo "=== Setting up VS Code ==="
+
+if command -v code &> /dev/null; then
+  code --install-extension vscodevim.vim --force
+  echo "[OK] VS Code extensions installed"
+else
+  echo "Warning: VS Code CLI (code) not found. Skipping extension installation."
+  echo "Install VS Code first, then run: code --install-extension vscodevim.vim"
+fi
+
+# ============================================================================
 # Install optional tools
 # ============================================================================
 
@@ -189,6 +204,7 @@ cat <<'NOTE'
    kubectl version --client
    colima status
   copilot --version
+  code --list-extensions
 
 === Useful Commands ===
 Colima:
@@ -212,11 +228,15 @@ GitHub Copilot CLI:
   copilot             # Start Copilot in the current directory
   /login              # Authenticate on first launch (run inside Copilot)
 
+VS Code:
+  code --list-extensions  # List installed extensions
+
 === Notes ===
 - Your old .zshrc was backed up (if it existed)
 - Colima will auto-start on macOS boot
 - Colima logs: tail -f /var/log/colima.log
 - LaunchAgent status: launchctl list | grep colima
+- VS Code settings and extensions are managed in .vscode/
 
 Enjoy your development setup!
 

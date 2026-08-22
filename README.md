@@ -9,6 +9,7 @@ Homebrew、Colima + k3s、zsh の統合設定で、開発環境を一気にセ�
 - **Homebrew**: パッケージマネージャー（Git、Node.js、Python など）
 - **Colima + k3s**: Docker & Kubernetes（macOS起動時に自動起動）
 - **GitHub Copilot CLI**: ターミナルから使えるAIコーディングエージェント
+- **VS Code**: 拡張機能とエディター設定をリポジトリで管理
 - **zsh**: 開発者向けシェル設定
   - kubectl / Docker / Git のエイリアス
   - Starship プロンプト統合
@@ -63,6 +64,10 @@ source ~/.zshrc
 6. **GitHub Copilot CLI のインストール**
    - Homebrew cask の `copilot-cli` をインストール
 
+7. **VS Code のセットアップ**
+   - `.vscode/extensions.json` の推奨拡張機能をインストール
+   - `.vscode/settings.json` で Vim モードを有効化
+
 ## 📁 ファイル説明
 
 ### Brewfile
@@ -84,6 +89,11 @@ Colima と k3s の設定ファイル。以下をカスタマイズ可能：
 - Starship プロンプト統合
 - NVM 統合
 - 便利なシェル関数
+
+### .vscode/extensions.json と .vscode/settings.json
+VS Code の拡張機能とワークスペース設定を管理します。現在は Vim 拡張機能を導入し、Vim モードを有効にしています。
+
+新しい環境では `./install.sh` 実行時に拡張機能がインストールされます。VS Code CLI が見つからない場合は、VS Code のコマンドパレットから `Shell Command: Install 'code' command in PATH` を実行してから、再度 `./install.sh` を実行してください。
 
 ## 🛠️ 便利なコマンド
 
