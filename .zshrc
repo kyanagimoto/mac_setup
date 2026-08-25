@@ -185,12 +185,6 @@ NC='\033[0m'
 setopt PROMPT_SUBST
 PS1="%F{cyan}%n%f:%F{blue}%~%f\$(git_branch)\$(kubernetes_context)%F{yellow}%f "
 
-# ==============================================================================
-# ENV Variables for Development Tools
-# ==============================================================================
-
-export ANTHROPIC_API_KEY=$(security find-generic-password -a "$USER" -s ANTHROPIC_API_KEY -w)
-
 # ============================================================================
 # Welcome & Motivation Message
 # ============================================================================
