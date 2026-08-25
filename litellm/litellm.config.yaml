@@ -1,0 +1,12 @@
+model_list:
+  # 🌟 1. 本気モード用のClaude
+  - model_name: smart-model
+    litellm_params:
+      model: anthropic/claude-sonnet-5
+      api_key: "sk-ant-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"  # TODO: 実際のAPIキーに置き換えてください（絶対にコミットしないこと）
+
+  # 🌟 2. 無料モード用のGemma
+  - model_name: fast-model
+    litellm_params:
+      model: ollama/gemma4:12b
+      api_base: "http://localhost:11434"

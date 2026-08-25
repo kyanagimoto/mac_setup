@@ -8,6 +8,11 @@ brew "htop"
 brew "tmux"
 brew "mas"
 
+# Vim / Neovim
+brew "neovim"
+brew "fzf"
+brew "ripgrep"
+
 # Container/Kubernetes
 brew "colima"
 brew "kubectl"

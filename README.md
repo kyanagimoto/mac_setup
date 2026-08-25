@@ -12,6 +12,7 @@ Homebrew、Colima + k3s、zsh の統合設定で、開発環境を一気にセ�
 - **GitHub Copilot CLI**: ターミナルから使えるAIコーディングエージェント
 - **Ollama**: ローカルでAIモデルを実行する環境（`gemma2:9b` を推奨）
 - **VS Code**: 拡張機能とエディター設定をリポジトリで管理
+- **Vim / Neovim**: 共通のおすすめ設定 + vim-plug によるプラグイン自動インストール
 - **zsh**: 開発者向けシェル設定
   - kubectl / Docker / Git のエイリアス
   - Starship プロンプト統合
@@ -72,6 +73,12 @@ source ~/.zshrc
    - `.vscode/extensions.json` の推奨拡張機能をインストール
    - `.vscode/settings.json` で Vim モードを有効化
 
+8. **Vim / Neovim のセットアップ**
+   - Homebrew で `neovim` / `fzf` / `ripgrep` をインストール
+   - `vim/vimrc` を `~/.vimrc` と `~/.config/nvim/init.vim` の両方にコピー（既存設定はバックアップ）
+   - プラグインマネージャー [vim-plug](https://github.com/junegunn/vim-plug) を Vim / Neovim 双方に自動インストール
+   - `:PlugInstall` をヘッドレス実行し、プラグインを自動ダウンロード
+
 ## 📁 ファイル説明
 
 ### Brewfile
@@ -99,6 +106,20 @@ Colima と k3s の設定ファイル。以下をカスタマイズ可能：
 VS Code の拡張機能とワークスペース設定を管理します。Vim モードに加えて Continue を導入します。
 
 新しい環境では `./install.sh` 実行時に拡張機能がインストールされます。VS Code CLI が見つからない場合は、VS Code のコマンドパレットから `Shell Command: Install 'code' command in PATH` を実行してから、再度 `./install.sh` を実行してください。
+
+### vim/vimrc
+Vim と Neovim 共通で使う設定ファイル。`install.sh` 実行時に `~/.vimrc` と `~/.config/nvim/init.vim` の両方へコピーされます。
+
+主な内容：
+- 行番号・相対行番号・検索・インデントなどの基本設定
+- 永続Undo、スワップ/バックアップファイルの一元管理
+- OSクリップボードとの連携（`clipboard=unnamed,unnamedplus`）
+- [vim-plug](https://github.com/junegunn/vim-plug) によるプラグイン管理
+  - `gruvbox`（カラースキーム）、`vim-airline`（ステータスライン）
+  - `nerdtree`（ファイルツリー）、`fzf.vim`（あいまい検索、ripgrep連携）
+  - `vim-fugitive` / `vim-gitgutter`（Git連携）
+  - `vim-surround` / `vim-commentary` / `auto-pairs` / `indentLine`（編集効率化）
+  - `coc.nvim`（補完・LSP、Node.jsを利用）
 
 ## 🛠️ 便利なコマンド
 
@@ -158,6 +179,34 @@ copilot --version      # バージョン確認
 
 Copilot CLI は現在のディレクトリ以下のファイルを読み取り、変更、コマンド実行する場合があります。
 信頼できるプロジェクトディレクトリで起動し、表示される権限確認を内容ごとに承認してください。
+
+### Vim / Neovim
+
+```bash
+vim                  # 新しい設定でVimを起動
+nvim                 # 同じ設定でNeovimを起動
+```
+
+エディタ内のキーマップ（リーダーキーは Space）：
+
+| キー | 動作 |
+| --- | --- |
+| `<Space>e` | NERDTree（ファイルツリー）をトグル |
+| `<Space>f` | fzfでファイルをあいまい検索 |
+| `<Space>g` | ripgrepでプロジェクト内テキスト検索 |
+| `<Space>b` | 開いているバッファ一覧をfzfで表示 |
+| `<Space>w` | 保存 |
+| `<Space>q` | 終了 |
+| `Ctrl+h/j/k/l` | 分割ウィンドウ間の移動 |
+| `Esc Esc` | 検索ハイライトを消す |
+
+プラグインの追加・更新：
+
+```vim
+:PlugInstall   " vim/vimrc に追加したプラグインをインストール
+:PlugUpdate    " プラグインを最新化
+:PlugClean     " 使われていないプラグインを削除
+```
 
 ### Ollama
 

@@ -1,0 +1,171 @@
+" ============================================================================
+" mac_setup: おすすめ Vim/Neovim 設定
+" Vim 8+ / Neovim 両対応
+" ============================================================================
+
+" ----------------------------------------------------------------------------
+" 基本設定
+" ----------------------------------------------------------------------------
+set nocompatible              " Vi互換モードを無効化
+set encoding=utf-8
+scriptencoding utf-8
+
+syntax enable                 " シンタックスハイライト
+filetype plugin indent on     " ファイルタイプ別のプラグイン・インデントを有効化
+
+set number                    " 行番号を表示
+set relativenumber            " 相対行番号（移動しやすくなる）
+set cursorline                " カーソル行をハイライト
+set showcmd                   " 入力中のコマンドを表示
+set laststatus=2              " ステータスラインを常に表示
+set ruler                     " カーソル位置を表示
+set wildmenu                  " コマンドライン補完を強化
+set wildmode=longest:full,full
+
+" ----------------------------------------------------------------------------
+" 検索
+" ----------------------------------------------------------------------------
+set incsearch                 " インクリメンタルサーチ
+set hlsearch                  " 検索結果をハイライト
+set ignorecase                " 検索時に大文字小文字を無視
+set smartcase                 " 大文字を含む場合は区別する
+
+" ----------------------------------------------------------------------------
+" インデント
+" ----------------------------------------------------------------------------
+set expandtab                 " タブをスペースに変換
+set tabstop=2                 " タブ幅
+set shiftwidth=2              " 自動インデント幅
+set softtabstop=2
+set autoindent
+set smartindent
+
+" ----------------------------------------------------------------------------
+" 編集の快適化
+" ----------------------------------------------------------------------------
+set backspace=indent,eol,start " バックスペースで何でも消せるように
+set clipboard=unnamed,unnamedplus " OSのクリップボードと連携
+set mouse=a                    " マウス操作を有効化
+set scrolloff=8                " 画面端に近づく前にスクロール開始
+set sidescrolloff=8
+set splitbelow                 " 水平分割は下に開く
+set splitright                 " 垂直分割は右に開く
+set hidden                     " 保存せずにバッファ切り替え可能に
+
+" 永続Undo（ファイルを閉じてもUndo履歴を保持）
+set undofile
+if !isdirectory($HOME . "/.vim/undodir")
+  call mkdir($HOME . "/.vim/undodir", "p")
+endif
+set undodir=~/.vim/undodir
+
+" スワップ・バックアップファイルを一箇所にまとめる
+if !isdirectory($HOME . "/.vim/backup")
+  call mkdir($HOME . "/.vim/backup", "p")
+endif
+if !isdirectory($HOME . "/.vim/swap")
+  call mkdir($HOME . "/.vim/swap", "p")
+endif
+set backupdir=~/.vim/backup//
+set directory=~/.vim/swap//
+
+" 不可視文字を表示
+set list
+set listchars=tab:▸\ ,trail:·,extends:❯,precedes:❮,nbsp:%
+
+" ----------------------------------------------------------------------------
+" 見た目
+" ----------------------------------------------------------------------------
+set termguicolors             " 24bitカラーを有効化（対応端末のみ）
+set background=dark
+set signcolumn=yes            " Git差分やLintの表示スペースを常に確保
+
+" ----------------------------------------------------------------------------
+" キーマップ
+" ----------------------------------------------------------------------------
+let mapleader = " "           " リーダーキーをスペースに
+
+" ハイライトのクリア
+nnoremap <silent> <Esc><Esc> :nohlsearch<CR>
+
+" 分割ウィンドウ移動をCtrl+hjklで
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+" バッファ切り替え
+nnoremap <leader>bn :bnext<CR>
+nnoremap <leader>bp :bprevious<CR>
+nnoremap <leader>bd :bdelete<CR>
+
+" NERDTreeトグル
+nnoremap <leader>e :NERDTreeToggle<CR>
+
+" fzf
+nnoremap <leader>f :Files<CR>
+nnoremap <leader>g :Rg<CR>
+nnoremap <leader>b :Buffers<CR>
+
+" 保存・終了ショートカット
+nnoremap <leader>w :w<CR>
+nnoremap <leader>q :q<CR>
+
+" ----------------------------------------------------------------------------
+" プラグイン管理: vim-plug
+" 未導入の場合は install.sh が自動でインストールします
+" ----------------------------------------------------------------------------
+let s:plug_vim = has('nvim')
+      \ ? stdpath('data') . '/site/autoload/plug.vim'
+      \ : '~/.vim/autoload/plug.vim'
+
+" HomebrewでインストールしたfzfをVimのランタイムパスに追加
+if isdirectory('/opt/homebrew/opt/fzf')
+  set rtp+=/opt/homebrew/opt/fzf
+elseif isdirectory('/usr/local/opt/fzf')
+  set rtp+=/usr/local/opt/fzf
+endif
+
+if filereadable(expand(s:plug_vim))
+  call plug#begin(has('nvim') ? stdpath('data') . '/plugged' : '~/.vim/plugged')
+
+  " 見た目
+  Plug 'morhetz/gruvbox'
+  Plug 'vim-airline/vim-airline'
+  Plug 'vim-airline/vim-airline-themes'
+
+  " ファイル操作
+  Plug 'preservim/nerdtree'
+  Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+  Plug 'junegunn/fzf.vim'
+
+  " Git連携
+  Plug 'tpope/vim-fugitive'
+  Plug 'airblade/vim-gitgutter'
+
+  " 編集効率化
+  Plug 'tpope/vim-surround'
+  Plug 'tpope/vim-commentary'
+  Plug 'jiangmiao/auto-pairs'
+  Plug 'Yggdroot/indentLine'
+
+  " 補完/LSP（Node.jsが必要）
+  Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
+  call plug#end()
+
+  " ------------------------------------------------------------------------
+  " プラグイン個別設定
+  " ------------------------------------------------------------------------
+  silent! colorscheme gruvbox
+
+  let g:airline#extensions#tabline#enabled = 1
+  let g:airline_theme = 'gruvbox'
+
+  let g:indentLine_char = '│'
+
+  " coc.nvim: Tabで補完確定
+  inoremap <silent><expr> <TAB>
+        \ coc#pum#visible() ? coc#pum#confirm() :
+        \ "\<Tab>"
+endif

@@ -145,6 +145,108 @@ else
 fi
 
 # ============================================================================
+# Setup Continue configuration
+# ============================================================================
+
+echo ""
+echo "=== Setting up Continue configuration ==="
+
+CONTINUE_CONFIG_DIR="${HOME}/.continue"
+CONTINUE_CONFIG_FILE="${CONTINUE_CONFIG_DIR}/config.yaml"
+CONTINUE_CONFIG_SOURCE="${SCRIPT_DIR}/continue/continue.config.yaml"
+
+if [[ -f "${CONTINUE_CONFIG_SOURCE}" ]]; then
+  mkdir -p "${CONTINUE_CONFIG_DIR}"
+
+  if [[ -f "${CONTINUE_CONFIG_FILE}" ]]; then
+    BACKUP_FILE="${CONTINUE_CONFIG_FILE}.backup.$(date +%Y%m%d_%H%M%S)"
+    echo "Backing up existing Continue config to ${BACKUP_FILE}..."
+    cp "${CONTINUE_CONFIG_FILE}" "${BACKUP_FILE}"
+  fi
+
+  echo "Copying Continue configuration to ${CONTINUE_CONFIG_FILE}..."
+  cp "${CONTINUE_CONFIG_SOURCE}" "${CONTINUE_CONFIG_FILE}"
+  echo "[OK] Continue configuration installed"
+else
+  echo "Warning: continue/continue.config.yaml not found in repo root. Skipping Continue configuration."
+fi
+
+# ============================================================================
+# Setup Neovim / Vim configuration
+# ============================================================================
+
+echo ""
+echo "=== Setting up Neovim / Vim ==="
+
+# Install neovim, fzf, ripgrep via Homebrew if missing
+for pkg in neovim fzf ripgrep; do
+  if ! brew list "${pkg}" &>/dev/null; then
+    echo "Installing ${pkg}..."
+    brew install "${pkg}"
+  else
+    echo "[OK] ${pkg} already installed"
+  fi
+done
+
+# Install fzf shell key bindings/fuzzy completion (non-destructive, no rc edits)
+FZF_PREFIX="$(brew --prefix fzf 2>/dev/null || true)"
+if [[ -n "${FZF_PREFIX}" && -x "${FZF_PREFIX}/install" ]]; then
+  "${FZF_PREFIX}/install" --key-bindings --completion --no-update-rc --no-bash --no-fish || true
+fi
+
+VIMRC_SOURCE="${SCRIPT_DIR}/vim/vimrc"
+
+if [[ -f "${VIMRC_SOURCE}" ]]; then
+  # --- Vim ---
+  echo "Configuring Vim (~/.vimrc)..."
+  if [[ -f "${HOME}/.vimrc" ]]; then
+    cp "${HOME}/.vimrc" "${HOME}/.vimrc.backup.$(date +%Y%m%d_%H%M%S)"
+  fi
+  cp "${VIMRC_SOURCE}" "${HOME}/.vimrc"
+
+  # --- Neovim ---
+  echo "Configuring Neovim (~/.config/nvim/init.vim)..."
+  NVIM_CONFIG_DIR="${HOME}/.config/nvim"
+  mkdir -p "${NVIM_CONFIG_DIR}"
+  if [[ -f "${NVIM_CONFIG_DIR}/init.vim" ]]; then
+    cp "${NVIM_CONFIG_DIR}/init.vim" "${NVIM_CONFIG_DIR}/init.vim.backup.$(date +%Y%m%d_%H%M%S)"
+  fi
+  cp "${VIMRC_SOURCE}" "${NVIM_CONFIG_DIR}/init.vim"
+
+  # --- vim-plug (plugin manager) for Vim ---
+  VIM_PLUG_FILE="${HOME}/.vim/autoload/plug.vim"
+  if [[ ! -f "${VIM_PLUG_FILE}" ]]; then
+    echo "Installing vim-plug for Vim..."
+    curl -fLo "${VIM_PLUG_FILE}" --create-dirs \
+      https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  else
+    echo "[OK] vim-plug for Vim already installed"
+  fi
+
+  # --- vim-plug (plugin manager) for Neovim ---
+  NVIM_DATA_DIR="$(nvim --headless -c 'echo stdpath("data")' -c 'quit' 2>&1 | tail -1)"
+  NVIM_PLUG_FILE="${NVIM_DATA_DIR}/site/autoload/plug.vim"
+  if [[ ! -f "${NVIM_PLUG_FILE}" ]]; then
+    echo "Installing vim-plug for Neovim..."
+    curl -fLo "${NVIM_PLUG_FILE}" --create-dirs \
+      https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  else
+    echo "[OK] vim-plug for Neovim already installed"
+  fi
+
+  # --- Install plugins headlessly ---
+  echo "Installing Vim plugins (this may take a minute)..."
+  vim +PlugInstall +qall &>/dev/null || echo "Warning: Vim plugin install reported an issue. Run ':PlugInstall' manually in Vim."
+
+  echo "Installing Neovim plugins (this may take a minute)..."
+  nvim --headless +PlugInstall +qall &>/dev/null || echo "Warning: Neovim plugin install reported an issue. Run ':PlugInstall' manually in Neovim."
+
+  echo "[OK] Vim/Neovim configuration installed"
+else
+  echo "Warning: vim/vimrc not found in repo root. Skipping Vim/Neovim configuration."
+fi
+
+# ============================================================================
 # Install optional tools
 # ============================================================================
 
@@ -178,6 +280,23 @@ python3 -m venv "${LITELLM_VENV}"
 "${LITELLM_VENV}/bin/python" -m pip install --upgrade pip 'litellm[proxy]'
 echo "[OK] LiteLLM proxy installed in ${LITELLM_VENV}"
 
+# --- LiteLLM proxy configuration (~/litellm_config.yaml) ---
+LITELLM_CONFIG_FILE="${HOME}/litellm_config.yaml"
+LITELLM_CONFIG_SOURCE="${SCRIPT_DIR}/litellm/litellm.config.yaml"
+
+if [[ -f "${LITELLM_CONFIG_SOURCE}" ]]; then
+  if [[ -f "${LITELLM_CONFIG_FILE}" ]]; then
+    echo "[OK] ${LITELLM_CONFIG_FILE} already exists. Leaving it untouched (contains your real API key)."
+  else
+    echo "Copying LiteLLM configuration template to ${LITELLM_CONFIG_FILE}..."
+    cp "${LITELLM_CONFIG_SOURCE}" "${LITELLM_CONFIG_FILE}"
+    echo "[OK] LiteLLM configuration installed"
+    echo "IMPORTANT: Edit ${LITELLM_CONFIG_FILE} and replace the placeholder api_key with your real key."
+  fi
+else
+  echo "Warning: litellm/litellm.config.yaml not found in repo root. Skipping LiteLLM configuration."
+fi
+
 # ============================================================================
 # Final Summary
 # ============================================================================
@@ -198,6 +317,15 @@ cat <<'NOTE'
   * NVM (Node Version Manager)
   * GitHub Copilot CLI
   * Useful functions (dockerclean, kctx, kgetlogs, etc.)
+- Neovim + Vim with a shared config (~/.vimrc, ~/.config/nvim/init.vim)
+  * vim-plug plugin manager (auto-installed for both Vim & Neovim)
+  * gruvbox theme + vim-airline status line
+  * NERDTree, fzf.vim, ripgrep integration
+  * vim-fugitive, vim-gitgutter (Git integration)
+  * vim-surround, vim-commentary, auto-pairs, indentLine
+  * coc.nvim (autocompletion / LSP, uses your installed Node.js)
+- Continue extension configuration (~/.continue/config.yaml)
+- LiteLLM proxy config template (~/litellm_config.yaml, only if not already present)
 
 === Next Steps ===
 1. Reload your shell:
@@ -237,12 +365,28 @@ GitHub Copilot CLI:
   copilot             # Start Copilot in the current directory
   /login              # Authenticate on first launch (run inside Copilot)
 
+LiteLLM:
+  lllm                 # Start the LiteLLM proxy in the background (port 8000)
+  edit ~/litellm_config.yaml  # Add/update models & API keys
+
 VS Code:
   code --list-extensions  # List installed extensions
   Continue                # Continue extension with Ollama
 
+Vim / Neovim:
+  vim                  # Launch Vim with the new config
+  nvim                 # Launch Neovim with the same config
+  :PlugInstall         # (Re)install plugins manually if needed
+  :PlugUpdate          # Update plugins
+  <Space>e             # Toggle NERDTree file explorer
+  <Space>f             # Fuzzy find files (fzf)
+  <Space>g             # Fuzzy search text in project (ripgrep)
+
 === Notes ===
 - Your old .zshrc was backed up (if it existed)
+- Your old .vimrc / nvim init.vim were backed up (if they existed)
+- Your old ~/.continue/config.yaml was backed up (if it existed)
+- ~/litellm_config.yaml is only created if missing, so your real API key is never overwritten
 - Colima will auto-start on macOS boot
 - Colima logs: tail -f /var/log/colima.log
 - LaunchAgent status: launchctl list | grep colima
