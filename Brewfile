@@ -17,6 +17,7 @@ brew "ripgrep"
 brew "colima"
 brew "kubectl"
 brew "docker"
+brew "k9s"
 
 # GUI apps (casks)
 cask "iterm2"
