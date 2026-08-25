@@ -102,12 +102,6 @@ autoload -Uz compinit && compinit
 # Python Configuration
 # ============================================================================
 
-# LiteLLM virtual environment
-export PATH="$HOME/.venvs/litellm/bin:$PATH"
-
-# LiteLLM aliases
-alias litellm8000="litellm --config ~/litellm_config.yaml --port 8000 > /dev/null 2>&1 &"
-
 # ============================================================================
 # Path Configuration
 # ============================================================================
@@ -190,6 +184,12 @@ NC='\033[0m'
 # Uses colors and git branch for better development experience
 setopt PROMPT_SUBST
 PS1="%F{cyan}%n%f:%F{blue}%~%f\$(git_branch)\$(kubernetes_context)%F{yellow}%f "
+
+# ==============================================================================
+# ENV Variables for Development Tools
+# ==============================================================================
+
+export ANTHROPIC_API_KEY=$(security find-generic-password -a "$USER" -s ANTHROPIC_API_KEY -w)
 
 # ============================================================================
 # Welcome & Motivation Message
