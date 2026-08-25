@@ -171,6 +171,13 @@ else
   echo "[OK] nvm already installed"
 fi
 
+# Install LiteLLM in an isolated virtual environment
+echo "Setting up LiteLLM proxy..."
+LITELLM_VENV="${HOME}/.venvs/litellm"
+python3 -m venv "${LITELLM_VENV}"
+"${LITELLM_VENV}/bin/python" -m pip install --upgrade pip 'litellm[proxy]'
+echo "[OK] LiteLLM proxy installed in ${LITELLM_VENV}"
+
 # ============================================================================
 # Final Summary
 # ============================================================================

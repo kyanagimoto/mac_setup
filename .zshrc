@@ -99,14 +99,11 @@ autoload -Uz compinit && compinit
 # bindkey -v
 
 # ============================================================================
-# Python Configuration (optional)
+# Python Configuration
 # ============================================================================
 
-# pyenv configuration (if installed)
-if command -v pyenv &> /dev/null; then
-  eval "$(pyenv init --path)"
-  eval "$(pyenv init -)"
-fi
+# LiteLLM virtual environment
+export PATH="$HOME/.venvs/litellm/bin:$PATH"
 
 # ============================================================================
 # Path Configuration

@@ -7,6 +7,7 @@ Homebrew、Colima + k3s、zsh の統合設定で、開発環境を一気にセ�
 ## 📦 セットアップ内容
 
 - **Homebrew**: パッケージマネージャー（Git、Node.js、Python など）
+- **LiteLLM**: 専用の Python 仮想環境に最新版をセットアップ
 - **Colima + k3s**: Docker & Kubernetes（macOS起動時に自動起動）
 - **GitHub Copilot CLI**: ターミナルから使えるAIコーディングエージェント
 - **Ollama**: ローカルでAIモデルを実行する環境（`gemma2:9b` を推奨）
@@ -61,6 +62,7 @@ source ~/.zshrc
 5. **オプショナルツールのインストール**
    - Starship（モダンシェルプロンプト）
    - NVM（Node Version Manager）
+   - LiteLLM proxy（専用 venv に最新版をインストール）
 
 6. **GitHub Copilot CLI のインストール**
    - Homebrew cask の `copilot-cli` をインストール
