@@ -106,7 +106,7 @@ autoload -Uz compinit && compinit
 export PATH="$HOME/.venvs/litellm/bin:$PATH"
 
 # LiteLLM aliases
-alias litellm8000="litellm --config ~/litellm_config.yaml --port 8000"
+alias litellm8000="litellm --config ~/litellm_config.yaml --port 8000 > /dev/null 2>&1 &"
 
 # ============================================================================
 # Path Configuration
