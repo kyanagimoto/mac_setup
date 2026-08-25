@@ -6,6 +6,7 @@ brew "python"
 # Useful CLI tools
 brew "htop"
 brew "tmux"
+brew "mas"
 
 # Container/Kubernetes
 brew "colima"
@@ -18,6 +19,6 @@ cask "visual-studio-code"
 cask "viber"
 
 # mac App Store apps (optional) - requires 'mas' and App Store login
-# Example: mas "Xcode" => mas "497799835"
+# Example: mas "Xcode", id: 497799835
 # To use mas entries, install mas in this Brewfile: brew "mas"
-# mas "497799835" # Xcode
+mas "LINE", id: 539883307
