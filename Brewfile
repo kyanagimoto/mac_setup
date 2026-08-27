@@ -8,6 +8,7 @@ brew "anyenv"
 brew "htop"
 brew "tmux"
 brew "mas"
+brew "libyaml"
 
 # Vim / Neovim
 brew "neovim"
