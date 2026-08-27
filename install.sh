@@ -48,16 +48,32 @@ echo ""
 echo "=== Setting up Colima ==="
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-COLIMA_CONFIG="${HOME}/.colima/default.yaml"
 COLIMA_CONFIG_SOURCE="${SCRIPT_DIR}/colima.yaml"
 
-# Create ~/.colima directory if it doesn't exist
-mkdir -p "${HOME}/.colima"
+# Colima reads the defaults for new instances from its template file. Ask colima
+# for the path so this keeps working if the layout changes between versions.
+COLIMA_CONFIG="$(colima template --print 2>/dev/null || true)"
+if [[ -z "${COLIMA_CONFIG}" ]]; then
+  COLIMA_CONFIG="${HOME}/.colima/_templates/default.yaml"
+fi
+
+mkdir -p "$(dirname "${COLIMA_CONFIG}")"
 
 # Copy colima config if present in the repo
 if [[ -f "${COLIMA_CONFIG_SOURCE}" ]]; then
+  if [[ -f "${COLIMA_CONFIG}" ]]; then
+    BACKUP_FILE="${COLIMA_CONFIG}.backup.$(date +%Y%m%d_%H%M%S)"
+    echo "Backing up existing colima template to ${BACKUP_FILE}..."
+    cp "${COLIMA_CONFIG}" "${BACKUP_FILE}"
+  fi
   echo "Copying colima configuration to ${COLIMA_CONFIG}..."
   cp "${COLIMA_CONFIG_SOURCE}" "${COLIMA_CONFIG}"
+  echo "[OK] colima template installed (applies to newly created instances)"
+  if colima status &>/dev/null; then
+    echo "Note: an instance already exists; it keeps its current settings."
+    echo "      To apply this config: 'colima delete && colima start' (destroys VM data)"
+    echo "      or adjust the live instance with 'colima start --edit'."
+  fi
 else
   echo "Warning: colima.yaml not found in repo root. Using default colima configuration."
 fi
@@ -253,15 +269,6 @@ fi
 echo ""
 echo "=== Installing optional tools ==="
 
-# Install starship (modern shell prompt)
-if ! command -v starship &> /dev/null; then
-  echo "Installing starship..."
-  brew install starship
-  echo "[OK] starship installed"
-else
-  echo "[OK] starship already installed"
-fi
-
 # Install nvm (Node Version Manager) if not present
 if [[ ! -d "${HOME}/.nvm" ]]; then
   echo "Installing nvm..."
@@ -289,7 +296,7 @@ cat <<'NOTE'
   * kubectl completion & Kubernetes aliases
   * Docker & Colima aliases
   * Git aliases & shortcuts
-  * Starship prompt integration
+  * Custom prompt with git branch + kubectl context
   * NVM (Node Version Manager)
   * GitHub Copilot CLI
   * Useful functions (dockerclean, kctx, kgetlogs, etc.)
@@ -306,11 +313,7 @@ cat <<'NOTE'
 1. Reload your shell:
    source ~/.zshrc
 
-2. (Optional) Install Starship config:
-   mkdir -p ~/.config/starship
-   touch ~/.config/starship.toml
-
-3. Check installed tools:
+2. Check installed tools:
    brew list
   ollama --version
    kubectl version --client

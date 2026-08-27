@@ -1,0 +1,32 @@
+# Colima + k3s configuration
+#
+# install.sh copies this to ~/.colima/_templates/default.yaml, which Colima
+# uses as the default configuration for NEW instances.
+# Verify the path on your Colima version with: colima template --print
+#
+# This does NOT reconfigure an already-created instance. To apply changes:
+#   colima delete && colima start        # recreate (destroys the VM's data)
+#   colima start --edit                  # or edit the live instance config
+#
+# Host-specific fields (arch, vmType, cpuType, mountType) are intentionally
+# omitted so Colima picks the right values per machine — vz/virtiofs on Apple
+# Silicon, qemu/sshfs on Intel.
+
+# VM resources
+cpu: 4
+memory: 8
+disk: 100
+
+# Container runtime
+runtime: docker
+
+# Kubernetes (k3s)
+kubernetes:
+  enabled: true
+  version: v1.35.0+k3s1
+  # traefik is disabled by default; add your own ingress if you need one
+  k3sArgs:
+    - --disable=traefik
+
+# Set the docker context / kubectl context to this instance on start
+autoActivate: true

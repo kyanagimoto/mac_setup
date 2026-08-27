@@ -14,7 +14,7 @@ Homebrew、Colima + k3s、zsh の統合設定で、開発環境を一気にセ�
 - **Vim / Neovim**: 共通のおすすめ設定 + vim-plug によるプラグイン自動インストール
 - **zsh**: 開発者向けシェル設定
   - kubectl / Docker / Git のエイリアス
-  - Starship プロンプト統合
+  - Git ブランチと Kubernetes context を表示するカスタムプロンプト
   - NVM (Node Version Manager)
   - 便利なコマンド補完・関数
 
@@ -51,7 +51,9 @@ source ~/.zshrc
    - Git、Node.js、Python、kubectl、Docker、Colima など
 
 3. **Colima セットアップ**
-   - `colima.yaml` を `~/.colima/default.yaml` にコピー
+   - `colima.yaml` を Colima のテンプレート（`~/.colima/_templates/default.yaml`）にコピー
+     - 既存のテンプレートはバックアップされます
+     - パスは `colima template --print` で確認できます
    - LaunchAgent を設定して、macOS起動時に自動起動するように構成
    - ログ: `/var/log/colima.log`
 
@@ -60,7 +62,6 @@ source ~/.zshrc
    - リポジトリの `.zshrc` を `~/.zshrc` にコピー
 
 5. **オプショナルツールのインストール**
-   - Starship（モダンシェルプロンプト）
    - NVM（Node Version Manager）
 
 6. **GitHub Copilot CLI のインストール**
@@ -89,14 +90,19 @@ Colima と k3s の設定ファイル。以下をカスタマイズ可能：
 - ディスク容量（デフォルト: 100GB）
 - Kubernetes バージョン
 
+`install.sh` はこれを **新規インスタンス用のテンプレート** としてコピーします。
+すでに作成済みのインスタンスには適用されません（後述の「Colima の設定を変更」を参照）。
+
+`arch` / `vmType` / `mountType` などのホスト依存の項目は意図的に記述していません。
+Colima が Apple Silicon なら `vz` + `virtiofs`、Intel なら `qemu` を自動で選びます。
+
 ### .zshrc
 包括的なシェル設定ファイル。以下が含まれます：
 - Homebrew 環境設定
 - kubectl 補完 & エイリアス
 - Docker & Colima のエイリアス
 - Git のエイリアス
-- Starship プロンプト統合
-- Git ブランチと現在の Kubernetes context のプロンプト表示
+- Git ブランチと現在の Kubernetes context を表示するカスタムプロンプト
 - NVM 統合
 - 便利なシェル関数
 
@@ -264,17 +270,24 @@ memory: 16      # メモリを増やす
 disk: 200       # ディスク容量を増やす
 ```
 
-### zsh プロンプトのカスタマイズ
-
-Starship を使用している場合、以下で設定：
+テンプレートは新しく作るインスタンスにだけ適用されます。
+既存インスタンスに反映するには、次のいずれかを実行します：
 
 ```bash
-mkdir -p ~/.config/starship
-cat > ~/.config/starship.toml << 'EOF'
-# Starship 設定
-add_newline = true
-EOF
+colima delete && colima start   # 作り直す（VM内のデータは消えます）
+colima start --edit             # 起動中の設定を直接編集する
 ```
+
+### zsh プロンプトのカスタマイズ
+
+プロンプトは `.zshrc` の `PS1` で定義しています（Starship は使用していません）。
+表示を変えるには `.zshrc` の以下の行を編集してから `install.sh` を実行します：
+
+```bash
+PS1="%F{cyan}%n%f:%F{blue}%~%f\$(git_branch)\$(kubernetes_context)%F{yellow}%f "
+```
+
+`git_branch` と `kubernetes_context` は同じファイル内で定義されたシェル関数です。
 
 ### 新しいエイリアスを追加
 

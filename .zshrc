@@ -74,7 +74,7 @@ alias dps='docker ps'
 alias ollama-start='brew services start ollama'
 alias ollama-stop='brew services stop ollama'
 alias ollama-status='brew services list | grep ollama'
-alias ollama-gemma='ollama run gemma2:9b'
+alias ollama-gemma='ollama run gemma4:12b'
 
 # macOS specific
 alias hidefiles='defaults write com.apple.finder AppleShowAllFiles NO; killall Finder'
@@ -97,10 +97,6 @@ autoload -Uz compinit && compinit
 
 # Vi-like keybindings (optional - comment out if you prefer emacs)
 # bindkey -v
-
-# ============================================================================
-# Python Configuration
-# ============================================================================
 
 # ============================================================================
 # Path Configuration

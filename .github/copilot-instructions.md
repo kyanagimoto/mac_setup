@@ -40,10 +40,10 @@ tail -f /var/log/colima.log  # Monitor auto-start on boot
 **install.sh** - Main orchestrator script
 - Installs Homebrew if missing (auto-detects Apple Silicon vs Intel)
 - Runs `brew bundle` to install packages from Brewfile
-- Copies `colima.yaml` to `~/.colima/default.yaml` for Colima configuration
+- Copies `colima.yaml` to Colima's template for new instances (`~/.colima/_templates/default.yaml`, resolved via `colima template --print`), backing up any existing template
 - Creates LaunchAgent (`com.mac-setup.colima.plist`) to auto-start Colima on macOS boot
 - Backs up existing `.zshrc` before copying new one
-- Installs optional tools: Starship prompt, nvm (Node Version Manager)
+- Installs optional tools: nvm (Node Version Manager)
 
 **.zshrc** - Comprehensive shell configuration
 - Homebrew environment setup (handles both Apple Silicon `/opt/homebrew` and Intel `/usr/local`)
@@ -56,10 +56,12 @@ tail -f /var/log/colima.log  # Monitor auto-start on boot
 - Custom prompt with git branch display
 - macOS-specific aliases (`hidefiles`, `showfiles`)
 
-### Optional colima.yaml
-- Located in repo root (if present), copied to `~/.colima/default.yaml` during installation
+### colima.yaml
+- Located in repo root, copied to Colima's new-instance template during installation
 - Configures Colima runtime: CPU cores, memory, disk size, Kubernetes version
-- Defaults used if file is absent
+- Host-specific fields (`arch`, `vmType`, `mountType`) are deliberately omitted so Colima picks per-machine values
+- Applies to newly created instances only; an existing instance needs `colima delete && colima start` or `colima start --edit`
+- Colima defaults are used if the file is absent
 
 ### LaunchAgent (macOS auto-start)
 - **File**: `~/Library/LaunchAgents/com.mac-setup.colima.plist`
@@ -112,9 +114,10 @@ The `.zshrc` defines comprehensive aliases grouped by tool (Kubernetes, Docker, 
 3. Test the alias/function: `<alias> [args]`
 
 ### Modifying Colima Configuration
-1. Edit **colima.yaml** in repo root (if not using defaults)
+1. Edit **colima.yaml** in repo root
 2. Update comments in **install.sh** if defaults change
-3. Test: `colima status` and `kubectl get nodes`
+3. Re-run `./install.sh` to deploy the template, then recreate the instance (`colima delete && colima start`) to apply it
+4. Test: `colima status` and `kubectl get nodes`
 
 ### LaunchAgent Debugging
 - Check status: `launchctl list | grep colima`
