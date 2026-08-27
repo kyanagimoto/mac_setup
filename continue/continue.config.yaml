@@ -2,35 +2,15 @@ name: Main Config
 version: 1.0.0
 schema: v1
 models:
-  # 🌟 1. チャットとエージェント（本気モード）
-  - name: LiteLLM Claude
-    provider: openai
-    model: smart-model
-    apiBase: http://localhost:8000/v1
+  - name: Ollama Gemma
+    provider: ollama
+    model: gemma4:12b
     roles:
       - chat
-    capabilities:
-      - tool_use
-
-  # 🌟 2. コード書き換え専用（無料モード）
-  - name: LiteLLM Gemma
-    provider: openai
-    model: fast-model
-    apiBase: http://localhost:8000/v1
-    roles:
       - edit
       - apply
-      - chat
-
-  # 🌟 3. 自動補完専用（無料・爆速補完）
-  - name: LiteLLM autocomp Gemma
-    provider: openai
-    model: fast-model
-    apiBase: http://localhost:8000/v1
-    roles:
       - autocomplete
 
-  # 🌟 4. フォルダ内検索用
   - name: Nomic Embed
     provider: ollama
     model: nomic-embed-text:latest

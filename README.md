@@ -7,10 +7,9 @@ Homebrew、Colima + k3s、zsh の統合設定で、開発環境を一気にセ�
 ## 📦 セットアップ内容
 
 - **Homebrew**: パッケージマネージャー（Git、Node.js、Python など）
-- **LiteLLM**: 専用の Python 仮想環境に最新版をセットアップ
 - **Colima + k3s**: Docker & Kubernetes（macOS起動時に自動起動）
 - **GitHub Copilot CLI**: ターミナルから使えるAIコーディングエージェント
-- **Ollama**: ローカルでAIモデルを実行する環境（`gemma2:9b` を推奨）
+- **Ollama**: ローカルでAIモデルを実行する環境（`gemma4:12b` を推奨）
 - **VS Code**: 拡張機能とエディター設定をリポジトリで管理
 - **Vim / Neovim**: 共通のおすすめ設定 + vim-plug によるプラグイン自動インストール
 - **zsh**: 開発者向けシェル設定
@@ -63,8 +62,6 @@ source ~/.zshrc
 5. **オプショナルツールのインストール**
    - Starship（モダンシェルプロンプト）
    - NVM（Node Version Manager）
-   - LiteLLM proxy（専用 venv に最新版をインストール）
-   - LiteLLM の API key 更新確認、有効期限の保存、期限切れ時の macOS アラート
 
 6. **GitHub Copilot CLI のインストール**
    - Homebrew cask の `copilot-cli` をインストール
@@ -217,19 +214,9 @@ Ollamaは自動インストールされません。公式サイトまたはHomeb
 brew install ollama
 brew services start ollama
 source ~/.zshrc
-ollama pull gemma2:9b
-ollama run gemma2:9b
+ollama pull gemma4:12b
+ollama run gemma4:12b
 ```
-
-### LiteLLM API key
-
-`install.sh` 実行時に LiteLLM の API key を更新するか確認します。`y` を選ぶと API key を非表示入力し、有効期限を `YYYY-MM-DD` 形式で入力します。
-
-- API key: `~/litellm_config.yaml` と macOS Keychain（サービス名: `mac_setup.litellm`）
-- 有効期限: `~/.config/litellm/api-key-expiry`
-- 有効期限を過ぎると、新しいシェル起動時に警告と macOS アラートを表示
-
-既存の設定ファイルを更新する場合は、更新前に `~/litellm_config.yaml.backup.YYYYMMDD_HHMMSS` が作成されます。
 
 モデルの利用可能なタグは [Ollama Library](https://ollama.com/library) で確認してください。
 
@@ -243,7 +230,7 @@ Ollama本体とContinueの接続設定は自動化せず、Continueの設定画�
 | --- | --- |
 | Provider | `Ollama` |
 | Base URL | `http://localhost:11434` |
-| Model ID | `gemma2:9b` |
+| Model ID | `gemma4:12b` |
 | Thinking / Reasoning | `Off` |
 
 Ollamaが起動している状態でContinueを開きます。利用可能なモデルは `ollama list` で確認できます。
