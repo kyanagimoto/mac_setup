@@ -9,6 +9,7 @@ brew "htop"
 brew "tmux"
 brew "mas"
 brew "libyaml"
+brew "mysql-client"
 
 # Vim / Neovim
 brew "neovim"
