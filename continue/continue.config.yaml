@@ -2,15 +2,9 @@ name: Main Config
 version: 1.0.0
 schema: v1
 models:
-  - name: Ollama Gemma
+  - name: Gemma 4
     provider: ollama
-    model: gemma4:12b
-    roles:
-      - chat
-      - edit
-      - apply
-      - autocomplete
-
+    model: gemma4
   - name: Nomic Embed
     provider: ollama
     model: nomic-embed-text:latest
