@@ -23,6 +23,7 @@ brew "k9s"
 cask "iterm2"
 cask "visual-studio-code"
 cask "viber"
+cask "clipy"
 
 # mac App Store apps (optional) - requires 'mas' and App Store login
 # Example: mas "Xcode", id: 497799835

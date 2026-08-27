@@ -64,6 +64,7 @@ source ~/.zshrc
    - Starship（モダンシェルプロンプト）
    - NVM（Node Version Manager）
    - LiteLLM proxy（専用 venv に最新版をインストール）
+   - LiteLLM の API key 更新確認、有効期限の保存、期限切れ時の macOS アラート
 
 6. **GitHub Copilot CLI のインストール**
    - Homebrew cask の `copilot-cli` をインストール
@@ -219,6 +220,16 @@ source ~/.zshrc
 ollama pull gemma2:9b
 ollama run gemma2:9b
 ```
+
+### LiteLLM API key
+
+`install.sh` 実行時に LiteLLM の API key を更新するか確認します。`y` を選ぶと API key を非表示入力し、有効期限を `YYYY-MM-DD` 形式で入力します。
+
+- API key: `~/litellm_config.yaml` と macOS Keychain（サービス名: `mac_setup.litellm`）
+- 有効期限: `~/.config/litellm/api-key-expiry`
+- 有効期限を過ぎると、新しいシェル起動時に警告と macOS アラートを表示
+
+既存の設定ファイルを更新する場合は、更新前に `~/litellm_config.yaml.backup.YYYYMMDD_HHMMSS` が作成されます。
 
 モデルの利用可能なタグは [Ollama Library](https://ollama.com/library) で確認してください。
 

@@ -109,6 +109,20 @@ autoload -Uz compinit && compinit
 # Add custom bin directories to PATH
 export PATH="$HOME/.local/bin:$PATH"
 
+# LiteLLM API key expiry alert
+check_litellm_api_key_expiry() {
+  local expiry_file="$HOME/.config/litellm/api-key-expiry"
+  if [[ -f "$expiry_file" ]]; then
+    local expiry_date=$(<"$expiry_file")
+    local today_date=$(date "+%Y-%m-%d")
+    if [[ "$expiry_date" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] && [[ "$today_date" > "$expiry_date" ]]; then
+      echo "警告: LiteLLM API key の有効期限 (${expiry_date}) が切れています。"
+      osascript -e 'display alert "LiteLLM API key の期限切れ" message "API key を更新してください。" as warning' >/dev/null 2>&1 &
+    fi
+  fi
+}
+check_litellm_api_key_expiry
+
 # ============================================================================
 # Useful Functions
 # ============================================================================

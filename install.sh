@@ -283,15 +283,58 @@ echo "[OK] LiteLLM proxy installed in ${LITELLM_VENV}"
 # --- LiteLLM proxy configuration (~/litellm_config.yaml) ---
 LITELLM_CONFIG_FILE="${HOME}/litellm_config.yaml"
 LITELLM_CONFIG_SOURCE="${SCRIPT_DIR}/litellm/litellm.config.yaml"
+LITELLM_METADATA_DIR="${HOME}/.config/litellm"
+LITELLM_EXPIRY_FILE="${LITELLM_METADATA_DIR}/api-key-expiry"
+LITELLM_KEYCHAIN_SERVICE="mac_setup.litellm"
 
 if [[ -f "${LITELLM_CONFIG_SOURCE}" ]]; then
-  if [[ -f "${LITELLM_CONFIG_FILE}" ]]; then
-    echo "[OK] ${LITELLM_CONFIG_FILE} already exists. Leaving it untouched (contains your real API key)."
-  else
+  if [[ ! -f "${LITELLM_CONFIG_FILE}" ]]; then
     echo "Copying LiteLLM configuration template to ${LITELLM_CONFIG_FILE}..."
     cp "${LITELLM_CONFIG_SOURCE}" "${LITELLM_CONFIG_FILE}"
     echo "[OK] LiteLLM configuration installed"
-    echo "IMPORTANT: Edit ${LITELLM_CONFIG_FILE} and replace the placeholder api_key with your real key."
+  else
+    echo "[OK] ${LITELLM_CONFIG_FILE} already exists."
+  fi
+
+  read -r -p "LiteLLM の api_key を更新しますか？ (y/n): " UPDATE_LITELLM_KEY
+  if [[ "${UPDATE_LITELLM_KEY}" =~ ^[Yy]$ ]]; then
+    while true; do
+      read -r -s -p "新しい Anthropic API key: " LITELLM_API_KEY
+      echo ""
+      if [[ -n "${LITELLM_API_KEY}" && "${LITELLM_API_KEY}" != *$'\n'* ]]; then
+        break
+      fi
+      echo "API key が空です。もう一度入力してください。"
+    done
+
+    while true; do
+      read -r -p "API key の有効期限 (YYYY-MM-DD): " LITELLM_EXPIRY_DATE
+      if [[ "${LITELLM_EXPIRY_DATE}" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] && \
+        date -j -f "%Y-%m-%d" "${LITELLM_EXPIRY_DATE}" "+%Y-%m-%d" >/dev/null 2>&1; then
+        break
+      fi
+      echo "日付の形式または値が不正です。YYYY-MM-DD で入力してください。"
+    done
+
+    cp "${LITELLM_CONFIG_FILE}" "${LITELLM_CONFIG_FILE}.backup.$(date +%Y%m%d_%H%M%S)"
+    API_KEY="${LITELLM_API_KEY}" awk '
+      /api_key:/ {
+        print substr($0, 1, index($0, "api_key:") - 1) "api_key: \"" ENVIRON["API_KEY"] "\""
+        next
+      }
+      { print }
+    ' "${LITELLM_CONFIG_FILE}" > "${LITELLM_CONFIG_FILE}.tmp"
+    mv "${LITELLM_CONFIG_FILE}.tmp" "${LITELLM_CONFIG_FILE}"
+
+    mkdir -p "${LITELLM_METADATA_DIR}"
+    chmod 700 "${LITELLM_METADATA_DIR}"
+    printf '%s\n' "${LITELLM_EXPIRY_DATE}" > "${LITELLM_EXPIRY_FILE}"
+    chmod 600 "${LITELLM_EXPIRY_FILE}"
+    security add-generic-password -U -s "${LITELLM_KEYCHAIN_SERVICE}" -a "${USER}" -w "${LITELLM_API_KEY}" >/dev/null
+    unset LITELLM_API_KEY
+    echo "[OK] API key を設定し、有効期限を ${LITELLM_EXPIRY_FILE} に保存しました。"
+  else
+    echo "API key は変更しません。"
   fi
 else
   echo "Warning: litellm/litellm.config.yaml not found in repo root. Skipping LiteLLM configuration."
@@ -325,7 +368,7 @@ cat <<'NOTE'
   * vim-surround, vim-commentary, auto-pairs, indentLine
   * coc.nvim (autocompletion / LSP, uses your installed Node.js)
 - Continue extension configuration (~/.continue/config.yaml)
-- LiteLLM proxy config template (~/litellm_config.yaml, only if not already present)
+- LiteLLM proxy configuration (~/litellm_config.yaml)
 
 === Next Steps ===
 1. Reload your shell:
@@ -386,7 +429,8 @@ Vim / Neovim:
 - Your old .zshrc was backed up (if it existed)
 - Your old .vimrc / nvim init.vim were backed up (if they existed)
 - Your old ~/.continue/config.yaml was backed up (if it existed)
-- ~/litellm_config.yaml is only created if missing, so your real API key is never overwritten
+- LiteLLM API key は install.sh の確認後に更新でき、更新前の設定はバックアップされます
+- LiteLLM API key の有効期限は `~/.config/litellm/api-key-expiry` に保存され、期限切れ時に警告されます
 - Colima will auto-start on macOS boot
 - Colima logs: tail -f /var/log/colima.log
 - LaunchAgent status: launchctl list | grep colima
