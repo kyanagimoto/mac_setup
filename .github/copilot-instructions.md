@@ -48,6 +48,7 @@ tail -f /var/log/colima.log  # Monitor auto-start on boot
 **.zshrc** - Comprehensive shell configuration
 - Homebrew environment setup (handles both Apple Silicon `/opt/homebrew` and Intel `/usr/local`)
 - NVM (Node Version Manager) integration
+- anyenv initialization for language version managers such as rbenv
 - Kubernetes/kubectl completion and aliases (`k`, `kgp`, `kgs`, `kgn`, `kdesc`, `klogs`)
 - Colima aliases (`colima-start`, `colima-stop`, `colima-status`)
 - Docker aliases (`d`, `dc`, `di`, `dps`)

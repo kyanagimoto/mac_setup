@@ -16,6 +16,7 @@ Homebrew、Colima + k3s、zsh の統合設定で、開発環境を一気にセ�
   - kubectl / Docker / Git のエイリアス
   - Git ブランチと Kubernetes context を表示するカスタムプロンプト
   - NVM (Node Version Manager)
+   - anyenv による rbenv (Ruby Version Manager)
   - 便利なコマンド補完・関数
 
 ## 🚀 クイックスタート
@@ -63,6 +64,7 @@ source ~/.zshrc
 
 5. **オプショナルツールのインストール**
    - NVM（Node Version Manager）
+   - anyenv から rbenv をインストールする手順は、後述の「Ruby / rbenv」を参照してください
 
 6. **GitHub Copilot CLI のインストール**
    - Homebrew cask の `copilot-cli` をインストール
@@ -126,6 +128,28 @@ Vim と Neovim 共通で使う設定ファイル。`install.sh` 実行時に `~/
   - `coc.nvim`（補完・LSP、Node.jsを利用）
 
 ## 🛠️ 便利なコマンド
+
+### Ruby / rbenv
+
+`./install.sh` で `anyenv` はインストールされます。Ruby のバージョン管理を使う場合は、シェルをリロードした後に `anyenv` の初期化と `rbenv` のインストールを実行します。
+
+```bash
+source ~/.zshrc
+anyenv install --init
+anyenv install rbenv
+exec $SHELL -l
+rbenv -v
+```
+
+Ruby をインストールするには、`ruby-build` プラグインも追加します。
+
+```bash
+git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)/plugins/ruby-build"
+rbenv install -l
+rbenv install <version>
+rbenv global <version>
+ruby --version
+```
 
 ### Colima
 

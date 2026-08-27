@@ -298,6 +298,7 @@ cat <<'NOTE'
   * Git aliases & shortcuts
   * Custom prompt with git branch + kubectl context
   * NVM (Node Version Manager)
+  * anyenv (rbenv setup is documented in README.md)
   * GitHub Copilot CLI
   * Useful functions (dockerclean, kctx, kgetlogs, etc.)
 - Neovim + Vim with a shared config (~/.vimrc, ~/.config/nvim/init.vim)
@@ -313,7 +314,12 @@ cat <<'NOTE'
 1. Reload your shell:
    source ~/.zshrc
 
-2. Check installed tools:
+2. Set up Ruby with anyenv/rbenv if needed:
+  anyenv install --init
+  anyenv install rbenv
+  exec $SHELL -l
+
+3. Check installed tools:
    brew list
   ollama --version
    kubectl version --client
