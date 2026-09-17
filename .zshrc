@@ -100,6 +100,26 @@ setopt INC_APPEND_HISTORY
 # Enable completion
 autoload -Uz compinit && compinit
 
+# ============================================================================
+# fzf (Fuzzy Finder) Configuration
+# ============================================================================
+
+# Set up fzf key bindings and fuzzy completion
+if [ -f ~/.fzf.zsh ]; then
+  source ~/.fzf.zsh
+elif command -v fzf &> /dev/null; then
+  eval "$(fzf --zsh)"
+fi
+
+# Use ripgrep for fzf if available (respects .gitignore, includes hidden files)
+if command -v rg &> /dev/null; then
+  export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git"'
+  export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+fi
+
+# fzf default options (layout, border, and height)
+export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
+
 # Vi-like keybindings (optional - comment out if you prefer emacs)
 # bindkey -v
 

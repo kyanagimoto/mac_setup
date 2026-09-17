@@ -362,6 +362,11 @@ Vim / Neovim:
   <Space>f             # Fuzzy find files (fzf)
   <Space>g             # Fuzzy search text in project (ripgrep)
 
+fzf (Shell):
+  Ctrl+r               # Fuzzy search command history
+  Ctrl+t               # Fuzzy find and insert file path
+  Alt+c                # Fuzzy find directory and cd
+
 === Notes ===
 - Your old .zshrc was backed up (if it existed)
 - Your old .vimrc / nvim init.vim were backed up (if they existed)
