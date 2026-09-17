@@ -338,6 +338,13 @@ mise:
   mise use -g <tool>@<ver> # Set global tool version (e.g. node@lts, ruby@latest)
   mise current        # Show currently active versions
 
+uv (Python):
+  uv venv             # Create a virtual environment (.venv)
+  uv pip install <pkg> # Fast package installation
+  uv run <cmd>        # Run command within environment
+  uvx <tool>          # Run standalone tool (e.g. uvx ruff check)
+
+
 Kubernetes:
   k get pods          # List pods
   k get svc           # List services

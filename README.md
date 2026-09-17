@@ -139,13 +139,32 @@ mise ls
 # 現在アクティブなバージョンの確認
 mise current
 
-# グローバルバージョンの設定（例: Node.js LTS, Ruby 最新版）
+# グローバルバージョンの設定（例: Node.js LTS, Python 3.13, Ruby 最新版）
 mise use -g node@lts
+mise use -g python@3.13
 mise use -g ruby@latest
 
 # プロジェクト固有のバージョン指定（カレントディレクトリに .tool-versions または mise.toml を作成）
 mise use node@24
+mise use python@3.12
 ```
+
+### Python 仮想環境・パッケージ管理 (uv)
+
+Python のパッケージインストールや仮想環境作成には、超高速な `uv` を利用します。
+
+```bash
+# 仮想環境（.venv）の作成と有効化
+uv venv
+source .venv/bin/activate
+
+# パッケージの高速インストール
+uv pip install requests pandas
+
+# 独立したCLIツール（black, ruff 等）を仮想環境を作らずに実行
+uvx ruff check .
+```
+
 
 ### Colima
 

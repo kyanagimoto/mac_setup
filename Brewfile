@@ -2,6 +2,7 @@
 brew "git"
 brew "python"
 brew "mise"
+brew "uv"
 
 # Useful CLI tools
 brew "htop"
