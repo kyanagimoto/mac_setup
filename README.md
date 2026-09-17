@@ -15,8 +15,8 @@ Homebrew、Colima + k3s、zsh の統合設定で、開発環境を一気にセ�
 - **zsh**: 開発者向けシェル設定
   - kubectl / Docker / Git のエイリアス
   - Git ブランチと Kubernetes context を表示するカスタムプロンプト
-  - NVM (Node Version Manager)
-   - anyenv による rbenv (Ruby Version Manager)
+  - mise による複数言語ランタイム管理（Node, Ruby, Python 等）
+  - fzf によるあいまい検索・補完連携
   - 便利なコマンド補完・関数
 
 ## 🚀 クイックスタート
@@ -62,9 +62,8 @@ source ~/.zshrc
    - 既存の `.zshrc` をバックアップ
    - リポジトリの `.zshrc` を `~/.zshrc` にコピー
 
-5. **オプショナルツールのインストール**
-   - NVM（Node Version Manager）
-   - anyenv から rbenv をインストールする手順は、後述の「Ruby / rbenv」を参照してください
+5. **言語ランタイム管理（mise）のセットアップ**
+   - mise による複数言語のバージョン管理（後述の「言語ランタイム管理 (mise)」を参照）
 
 6. **GitHub Copilot CLI のインストール**
    - Homebrew cask の `copilot-cli` をインストール
@@ -129,26 +128,23 @@ Vim と Neovim 共通で使う設定ファイル。`install.sh` 実行時に `~/
 
 ## 🛠️ 便利なコマンド
 
-### Ruby / rbenv
+### 言語ランタイム管理 (mise)
 
-`./install.sh` で `anyenv` はインストールされます。Ruby のバージョン管理を使う場合は、シェルをリロードした後に `anyenv` の初期化と `rbenv` のインストールを実行します。
-
-```bash
-source ~/.zshrc
-anyenv install --init
-anyenv install rbenv
-exec $SHELL -l
-rbenv -v
-```
-
-Ruby をインストールするには、`ruby-build` プラグインも追加します。
+Node.js, Ruby, Python などの言語バージョンを `mise` で一元管理できます。
 
 ```bash
-git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)/plugins/ruby-build"
-rbenv install -l
-rbenv install <version>
-rbenv global <version>
-ruby --version
+# インストール済みツール・バージョンの確認
+mise ls
+
+# 現在アクティブなバージョンの確認
+mise current
+
+# グローバルバージョンの設定（例: Node.js LTS, Ruby 最新版）
+mise use -g node@lts
+mise use -g ruby@latest
+
+# プロジェクト固有のバージョン指定（カレントディレクトリに .tool-versions または mise.toml を作成）
+mise use node@24
 ```
 
 ### Colima

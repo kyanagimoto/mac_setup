@@ -13,27 +13,18 @@ elif [[ -x "/usr/local/bin/brew" ]]; then
 fi
 
 # ============================================================================
-# NVM (Node Version Manager) Configuration
+# mise (Polyglot Runtime Manager) Configuration
 # ============================================================================
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-
-# anyenv (Ruby/rbenv and other language version managers)
-if command -v anyenv &> /dev/null; then
-  eval "$(anyenv init -)"
+# Polyglot runtime version manager (Node, Python, Ruby, Go, etc.)
+if command -v mise &> /dev/null; then
+  eval "$(mise activate zsh)"
 fi
 
 # ============================================================================
 # Kubernetes/kubectl Configuration
 # ============================================================================
 
-# kubectl shell completion
-if command -v kubectl &> /dev/null; then
-  source <(kubectl completion zsh)
-  compdef _kubectl kubectl
-fi
 
 # Colima aliases
 alias colima-start='colima start'
@@ -99,6 +90,12 @@ setopt INC_APPEND_HISTORY
 
 # Enable completion
 autoload -Uz compinit && compinit
+
+# kubectl completion (must be loaded after compinit)
+if command -v kubectl &> /dev/null; then
+  source <(kubectl completion zsh)
+  compdef _kubectl kubectl 2>/dev/null || true
+fi
 
 # ============================================================================
 # fzf (Fuzzy Finder) Configuration

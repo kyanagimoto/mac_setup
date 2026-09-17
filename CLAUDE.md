@@ -19,7 +19,7 @@ bash -n install.sh                 # syntax-check the installer without executin
 # verification after a run
 brew list && colima status && kubectl version --client
 code --list-extensions
-tail -f /var/log/colima.log        # Colima auto-start diagnostics
+tail -f ~/Library/Logs/colima.log        # Colima auto-start diagnostics
 launchctl list | grep colima
 ```
 

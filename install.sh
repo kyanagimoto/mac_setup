@@ -84,27 +84,30 @@ mkdir -p "${LAUNCH_AGENTS_DIR}"
 
 PLIST_FILE="${LAUNCH_AGENTS_DIR}/com.mac-setup.colima.plist"
 
-cat > "${PLIST_FILE}" << 'PLIST'
+cat > "${PLIST_FILE}" << PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
     <key>Label</key>
     <string>com.mac-setup.colima</string>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    </dict>
     <key>ProgramArguments</key>
     <array>
         <string>sh</string>
         <string>-c</string>
-        <string>sleep 10 &amp;&amp; /opt/homebrew/bin/colima start --profile default || /usr/local/bin/colima start --profile default</string>
+        <string>sleep 10 &amp;&amp; (colima status --profile default &gt;/dev/null 2&gt;&amp;1 || colima start --profile default)</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
-    <key>StartInterval</key>
-    <integer>60</integer>
     <key>StandardErrorPath</key>
-    <string>/var/log/colima.log</string>
+    <string>${HOME}/Library/Logs/colima.log</string>
     <key>StandardOutPath</key>
-    <string>/var/log/colima.log</string>
+    <string>${HOME}/Library/Logs/colima.log</string>
 </dict>
 </plist>
 PLIST
@@ -112,8 +115,9 @@ PLIST
 echo "Created LaunchAgent at ${PLIST_FILE}"
 echo "Colima will auto-start on next macOS boot"
 
-# Load the LaunchAgent immediately
-launchctl load "${PLIST_FILE}" 2>/dev/null || {
+# Reload the LaunchAgent
+launchctl bootout "gui/$(id -u)/com.mac-setup.colima" 2>/dev/null || launchctl unload "${PLIST_FILE}" 2>/dev/null || true
+launchctl bootstrap "gui/$(id -u)" "${PLIST_FILE}" 2>/dev/null || launchctl load "${PLIST_FILE}" 2>/dev/null || {
   echo "Note: LaunchAgent will be loaded on next system restart"
 }
 
@@ -269,15 +273,11 @@ fi
 echo ""
 echo "=== Installing optional tools ==="
 
-# Install nvm (Node Version Manager) if not present
-if [[ ! -d "${HOME}/.nvm" ]]; then
-  echo "Installing nvm..."
-  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-  export NVM_DIR="${HOME}/.nvm"
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-  echo "[OK] nvm installed"
+# Verify mise (Polyglot Runtime Manager)
+if command -v mise &> /dev/null; then
+  echo "[OK] mise already installed"
 else
-  echo "[OK] nvm already installed"
+  echo "Note: mise will be installed via brew bundle"
 fi
 
 # ============================================================================
@@ -297,8 +297,7 @@ cat <<'NOTE'
   * Docker & Colima aliases
   * Git aliases & shortcuts
   * Custom prompt with git branch + kubectl context
-  * NVM (Node Version Manager)
-  * anyenv (rbenv setup is documented in README.md)
+  * mise (Polyglot Runtime Manager for Node, Ruby, Python, etc.)
   * GitHub Copilot CLI
   * Useful functions (dockerclean, kctx, kgetlogs, etc.)
 - Neovim + Vim with a shared config (~/.vimrc, ~/.config/nvim/init.vim)
@@ -314,10 +313,10 @@ cat <<'NOTE'
 1. Reload your shell:
    source ~/.zshrc
 
-2. Set up Ruby with anyenv/rbenv if needed:
-  anyenv install --init
-  anyenv install rbenv
-  exec $SHELL -l
+2. Manage language versions with mise (optional):
+   mise use -g node@lts
+   mise use -g ruby@latest
+   mise ls
 
 3. Check installed tools:
    brew list
@@ -333,6 +332,11 @@ Colima:
   colima stop         # Stop Colima
   colima status       # Check status
   colima-start        # Alias for colima start
+
+mise:
+  mise ls             # List installed tools and versions
+  mise use -g <tool>@<ver> # Set global tool version (e.g. node@lts, ruby@latest)
+  mise current        # Show currently active versions
 
 Kubernetes:
   k get pods          # List pods
@@ -372,7 +376,7 @@ fzf (Shell):
 - Your old .vimrc / nvim init.vim were backed up (if they existed)
 - Your old ~/.continue/config.yaml was backed up (if it existed)
 - Colima will auto-start on macOS boot
-- Colima logs: tail -f /var/log/colima.log
+- Colima logs: tail -f ~/Library/Logs/colima.log
 - LaunchAgent status: launchctl list | grep colima
 - VS Code settings and extensions are managed in .vscode/
 

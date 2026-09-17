@@ -2,7 +2,7 @@
 brew "git"
 brew "node"
 brew "python"
-brew "anyenv"
+brew "mise"
 
 # Useful CLI tools
 brew "htop"
