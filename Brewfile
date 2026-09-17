@@ -1,6 +1,5 @@
 # Homebrew formulae
 brew "git"
-brew "node"
 brew "python"
 brew "mise"
 
