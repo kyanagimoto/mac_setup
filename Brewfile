@@ -32,6 +32,7 @@ cask "github-copilot-app"
 cask "antigravity"
 cask "antigravity-ide"
 cask "antigravity-cli"
+cask "skyhook-io/tap/radar-desktop"
 
 # mac App Store apps (optional) - requires 'mas' and App Store login
 # Example: mas "Xcode", id: 497799835
