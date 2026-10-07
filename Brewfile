@@ -33,6 +33,7 @@ cask "antigravity"
 cask "antigravity-ide"
 cask "antigravity-cli"
 cask "skyhook-io/tap/radar-desktop"
+cask "karabiner-elements"
 
 # mac App Store apps (optional) - requires 'mas' and App Store login
 # Example: mas "Xcode", id: 497799835
