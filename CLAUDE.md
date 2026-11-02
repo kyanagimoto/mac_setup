@@ -37,9 +37,10 @@ There is no way to run "one test". To exercise a single section of `install.sh`,
 | `continue/continue.config.yaml` | `~/.continue/config.yaml` |
 | `.vscode/extensions.json`, `.vscode/settings.json` | used as workspace settings; extensions installed via `code --install-extension` |
 | `colima.yaml` | `~/.colima/_templates/default.yaml` (Colima's new-instance template) |
+| `keyboard/com.mac-setup.keyboard.plist` | `~/Library/LaunchAgents/com.mac-setup.keyboard.plist` (Caps Lock → Control mapping at login) |
 | *(generated inline by install.sh)* | `~/Library/LaunchAgents/com.mac-setup.colima.plist` |
 
-The installer's phases run in a fixed order and each is independently skippable: Homebrew bootstrap → `brew bundle` → Colima config + LaunchAgent → zsh → VS Code extensions → Continue config → Vim/Neovim (incl. vim-plug bootstrap and headless `:PlugInstall`) → optional tools (nvm) → summary heredoc.
+The installer's phases run in a fixed order and each is independently skippable: Homebrew bootstrap → `brew bundle` → Colima config + LaunchAgent → keyboard LaunchAgent → zsh → VS Code extensions → Continue config → Vim/Neovim (incl. vim-plug bootstrap and headless `:PlugInstall`) → optional tools (nvm) → summary heredoc.
 
 ### Invariants to preserve when editing `install.sh`
 

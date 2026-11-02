@@ -18,6 +18,7 @@ Homebrew、Colima + k3s、zsh の統合設定で、開発環境を一気にセ�
   - mise による複数言語ランタイム管理（Node, Ruby, Python 等）
   - fzf によるあいまい検索・補完連携
   - 便利なコマンド補完・関数
+- **キーボード**: Caps Lock を Control に変更（ログイン時に適用、接続中のすべてのキーボードが対象）
 
 ## 🚀 クイックスタート
 
@@ -58,22 +59,25 @@ source ~/.zshrc
    - LaunchAgent を設定して、macOS起動時に自動起動するように構成
    - ログ: `/var/log/colima.log`
 
-4. **zsh 設定のセットアップ**
+4. **キーボード設定**
+   - LaunchAgent を設定し、Caps Lock を Control に変更（ログイン時に適用）
+
+5. **zsh 設定のセットアップ**
    - 既存の `.zshrc` をバックアップ
    - リポジトリの `.zshrc` を `~/.zshrc` にコピー
 
-5. **言語ランタイム管理（mise）のセットアップ**
+6. **言語ランタイム管理（mise）のセットアップ**
    - mise による複数言語のバージョン管理（後述の「言語ランタイム管理 (mise)」を参照）
 
-6. **GitHub Copilot CLI のインストール**
+7. **GitHub Copilot CLI のインストール**
    - Homebrew cask の `copilot-cli` をインストール
 
-7. **VS Code のセットアップ**
+8. **VS Code のセットアップ**
    - Vim 拡張機能と Continue 拡張機能をインストール
    - `.vscode/extensions.json` の推奨拡張機能をインストール
    - `.vscode/settings.json` で Vim モードを有効化
 
-8. **Vim / Neovim のセットアップ**
+9. **Vim / Neovim のセットアップ**
    - Homebrew で `neovim` / `fzf` / `ripgrep` をインストール
    - `vim/vimrc` を `~/.vimrc` と `~/.config/nvim/init.vim` の両方にコピー（既存設定はバックアップ）
    - プラグインマネージャー [vim-plug](https://github.com/junegunn/vim-plug) を Vim / Neovim 双方に自動インストール
@@ -307,6 +311,8 @@ la                    # ls -lA
 showfiles             # 隠しファイルを表示
 hidefiles             # 隠しファイルを非表示
 ```
+
+Caps Lock は Control として動作します。この設定はログイン時に適用され、内蔵・外付けを含むすべてのキーボードが対象です。
 
 ## ⚙️ カスタマイズ
 

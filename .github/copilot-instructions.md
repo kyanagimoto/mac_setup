@@ -42,6 +42,7 @@ tail -f /var/log/colima.log  # Monitor auto-start on boot
 - Runs `brew bundle` to install packages from Brewfile
 - Copies `colima.yaml` to Colima's template for new instances (`~/.colima/_templates/default.yaml`, resolved via `colima template --print`), backing up any existing template
 - Creates LaunchAgent (`com.mac-setup.colima.plist`) to auto-start Colima on macOS boot
+- Installs `keyboard/com.mac-setup.keyboard.plist` as a LaunchAgent to map Caps Lock to Control at login
 - Backs up existing `.zshrc` before copying new one
 - Installs optional tools: nvm (Node Version Manager)
 
@@ -70,6 +71,10 @@ tail -f /var/log/colima.log  # Monitor auto-start on boot
 - **Function**: Auto-starts Colima 10 seconds after macOS boot
 - **Logs to**: `/var/log/colima.log`
 - Runs every 60 seconds; only starts if not already running
+
+### Keyboard mapping
+- **File**: `~/Library/LaunchAgents/com.mac-setup.keyboard.plist` (source: `keyboard/com.mac-setup.keyboard.plist`)
+- **Function**: Maps Caps Lock to Control at login for all keyboards using `hidutil`
 
 ## Key Conventions
 

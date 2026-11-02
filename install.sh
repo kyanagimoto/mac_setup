@@ -122,6 +122,34 @@ launchctl bootstrap "gui/$(id -u)" "${PLIST_FILE}" 2>/dev/null || launchctl load
 }
 
 # ============================================================================
+# Map Caps Lock to Control
+# ============================================================================
+
+echo ""
+echo "=== Setting up keyboard mapping ==="
+
+KEYBOARD_AGENT_SOURCE="${SCRIPT_DIR}/keyboard/com.mac-setup.keyboard.plist"
+KEYBOARD_AGENT_FILE="${LAUNCH_AGENTS_DIR}/com.mac-setup.keyboard.plist"
+
+if command -v hidutil >/dev/null 2>&1 && [[ -f "${KEYBOARD_AGENT_SOURCE}" ]]; then
+  if [[ -f "${KEYBOARD_AGENT_FILE}" ]]; then
+    BACKUP_FILE="${KEYBOARD_AGENT_FILE}.backup.$(date +%Y%m%d_%H%M%S)"
+    echo "Backing up existing keyboard LaunchAgent to ${BACKUP_FILE}..."
+    cp "${KEYBOARD_AGENT_FILE}" "${BACKUP_FILE}"
+  fi
+
+  echo "Copying keyboard LaunchAgent to ${KEYBOARD_AGENT_FILE}..."
+  cp "${KEYBOARD_AGENT_SOURCE}" "${KEYBOARD_AGENT_FILE}"
+  launchctl bootout "gui/$(id -u)/com.mac-setup.keyboard" 2>/dev/null || launchctl unload "${KEYBOARD_AGENT_FILE}" 2>/dev/null || true
+  launchctl bootstrap "gui/$(id -u)" "${KEYBOARD_AGENT_FILE}" 2>/dev/null || launchctl load "${KEYBOARD_AGENT_FILE}" 2>/dev/null || {
+    echo "Note: Keyboard mapping will be applied at the next login"
+  }
+  echo "[OK] Caps Lock is mapped to Control"
+else
+  echo "Warning: hidutil or keyboard LaunchAgent source not found. Skipping keyboard mapping."
+fi
+
+# ============================================================================
 # Setup zsh configuration
 # ============================================================================
 
@@ -385,6 +413,7 @@ fzf (Shell):
 - Colima will auto-start on macOS boot
 - Colima logs: tail -f ~/Library/Logs/colima.log
 - LaunchAgent status: launchctl list | grep colima
+- Caps Lock maps to Control at login (all keyboards)
 - VS Code settings and extensions are managed in .vscode/
 
 Enjoy your development setup!
